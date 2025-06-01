@@ -1,0 +1,15 @@
+.agents
+GEMINI.md
+.gemini/
+vendor/
+bin/
+lynx
+.cursor/
+.windsurf/
+.ai/
+ai_docs/
+skills-lock.json
+
+# Hugo build artifacts
+site/public/
+site/.hugo_build.lock
