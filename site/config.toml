@@ -1,0 +1,24 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Lynx FIM Documentation'
+theme = 'hugo-book'
+
+[params]
+  # (Optional) Set Google Analytics ID
+  # googleAnalytics = "UA-XXXXXXXXX-X"
+
+  # (Optional) Set to true to use the "book" menu style
+  BookMenuBundle = true
+
+  # (Optional) Set to true to show "Edit this page" link
+  BookRepo = "https://github.com/ItsAdam01/Lynx"
+  BookEditPath = "edit/main/site"
+
+  # (Optional) Set to true to show the table of contents
+  BookToC = true
+
+  # (Optional) Set to true to show the search bar
+  BookSearch = true
+
+  # Enable KaTeX for mathematical notation
+  BookKaTeX = true
