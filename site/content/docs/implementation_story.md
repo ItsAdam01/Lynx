@@ -75,7 +75,15 @@ I've successfully implemented recursive directory watching today. This was a big
 
 **The Lesson:** I learned about the importance of handling OS events correctly. For example, when a new directory is created, `fsnotify` gives me a `Create` event. I have to immediately add that directory to the watcher so I don't miss any files created inside it a split second later.
 
-### Technical Achievements:
+## Milestone 9: Structured Logging and the Start Command (July 8, 2025)
+
+Phase 2 is now officially complete. I've wired up the real-time monitor to the CLI with the new `lynx start` command, and I've implemented structured JSON logging.
+
+**The Research:** I learned that in the enterprise security world, simple text logs aren't enough. Security Information and Event Management (SIEM) systems like Splunk or ELK need structured data. I decided to use Go's standard library `log/slog` package to output all events as JSON.
+
+**The Breakthrough:** Bringing everything together in `cmd/start.go` was incredibly satisfying. The agent now loads the configuration, verifies the signed baseline, initializes the JSON logger, and blocks indefinitely while listening for file system events. It even handles termination signals (`SIGINT`, `SIGTERM`) gracefully.
+
+### Technical Achievements (Phase 2 Complete):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
@@ -84,5 +92,7 @@ I've successfully implemented recursive directory watching today. This was a big
 - [x] CLI implementation for `lynx init` and `lynx baseline`.
 - [x] Core real-time monitoring with `fsnotify`.
 - [x] Recursive directory watching and anomaly detection logic.
+- [x] Structured JSON logging using `log/slog`.
+- [x] Long-running `lynx start` command with graceful shutdown.
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Transitioning to Real-time defense.*
