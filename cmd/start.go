@@ -1,0 +1,120 @@
+package cmd
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/ItsAdam01/Lynx/internal/alert"
+	"github.com/ItsAdam01/Lynx/internal/app"
+	"github.com/ItsAdam01/Lynx/internal/config"
+	"github.com/ItsAdam01/Lynx/internal/crypto"
+	"github.com/ItsAdam01/Lynx/internal/fs"
+	"github.com/ItsAdam01/Lynx/internal/logger"
+	"github.com/spf13/cobra"
+)
+
+var startBaselineInput string
+
+// startCmd represents the start command
+var startCmd = &cobra.Command{
+	Use:   "start",
+	Short: "Start real-time file integrity monitoring",
+	Long: `Loads the configured baseline and begins watching the file system 
+for any unauthorized changes using inotify. Events are logged in JSON format
+and dispatched asynchronously to the configured webhook.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg, err := config.LoadConfig(cfgFile)
+		if err != nil {
+			fmt.Printf("Error loading config: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Initialize structured JSON logging
+		if err := logger.InitLogger(cfg.LogFile); err != nil {
+			fmt.Printf("Error initializing logger: %v\n", err)
+			os.Exit(1)
+		}
+
+		secret, err := cfg.GetHmacSecret()
+		if err != nil {
+			logger.Error("Failed to get HMAC secret", "error", err.Error())
+			os.Exit(1)
+		}
+
+		// Load and verify the baseline
+		baseline, err := fs.LoadBaseline(startBaselineInput, secret)
+		if err != nil {
+			msg := fmt.Sprintf("CRITICAL: Baseline integrity compromised or file missing: %v", err)
+			logger.Error(msg)
+			sendTamperAlert(cfg, "BASELINE_TAMPER", startBaselineInput, msg)
+			os.Exit(1)
+		}
+
+		// Verify that the config file itself hasn't been tampered with
+		currentCfgHash, _ := crypto.HashFile(cfgFile)
+		if currentCfgHash != baseline.Metadata.ConfigHash {
+			msg := "CRITICAL: Configuration file mismatch. The config.yaml has been modified since the baseline was created."
+			logger.Error(msg, "file", cfgFile)
+			sendTamperAlert(cfg, "CONFIG_TAMPER", cfgFile, msg)
+			fmt.Printf("Error: Configuration file mismatch. Please re-run 'lynx baseline' if this change was intentional.\n")
+			os.Exit(1)
+		}
+
+		logger.Info("Starting Lynx FIM agent", "agent_name", cfg.AgentName, "total_baseline_files", baseline.Metadata.TotalFiles)
+
+		// Set up synchronization and channels
+		stop := make(chan struct{})
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+		incidents := make(chan app.Incident, 100)
+		alertChan := make(chan alert.Alert, 100)
+
+		// 1. Start the asynchronous alert dispatcher
+		go alert.StartDispatcher(cfg.WebhookURL, alertChan, stop)
+
+		// 2. Start the real-time monitoring system
+		go func() {
+			if err := app.StartMonitoring(cfg, baseline, incidents, stop); err != nil {
+				logger.Error("Monitor failed", "error", err.Error())
+				os.Exit(1)
+			}
+		}()
+
+		// Main event loop
+		for {
+			select {
+			case inc := <-incidents:
+				if inc.Severity == "CRITICAL" {
+					logger.Error("Critical anomaly detected", "details", inc.Message, "file", inc.FilePath)
+				} else {
+					logger.Warn("Anomaly detected", "details", inc.Message, "file", inc.FilePath)
+				}
+				fmt.Printf("[%s] %s: %s\n", inc.Severity, inc.EventType, inc.FilePath)
+				alertChan <- alert.NewAlert(cfg.AgentName, inc.Severity, inc.EventType, inc.FilePath, inc.Message)
+
+			case sig := <-sigChan:
+				logger.Info("Shutting down Lynx FIM", "signal", sig.String())
+				close(stop)
+				return
+			}
+		}
+	},
+}
+
+// sendTamperAlert attempts to send a single critical alert synchronously before exit.
+func sendTamperAlert(cfg *config.Config, eventType, file, message string) {
+	if cfg.WebhookURL == "" {
+		return
+	}
+	a := alert.NewAlert(cfg.AgentName, "CRITICAL", eventType, file, message)
+	// We send this synchronously because the agent is about to exit
+	_ = alert.SendWebhook(cfg.WebhookURL, a)
+}
+
+func init() {
+	RootCmd.AddCommand(startCmd)
+	startCmd.Flags().StringVarP(&startBaselineInput, "baseline", "b", "baseline.json", "path to the verified baseline file")
+}
