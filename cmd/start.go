@@ -24,15 +24,13 @@ for any unauthorized changes using inotify. Events are logged in JSON format.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.LoadConfig(cfgFile)
 		if err != nil {
-			fmt.Printf("Error loading config: %v
-", err)
+			fmt.Printf("Error loading config: %v\n", err)
 			os.Exit(1)
 		}
 
 		// Initialize structured JSON logging
 		if err := logger.InitLogger(cfg.LogFile); err != nil {
-			fmt.Printf("Error initializing logger: %v
-", err)
+			fmt.Printf("Error initializing logger: %v\n", err)
 			os.Exit(1)
 		}
 
@@ -69,10 +67,8 @@ for any unauthorized changes using inotify. Events are logged in JSON format.`,
 		for {
 			select {
 			case anomaly := <-anomalies:
-				// For now, we log the anomaly strings from the channel.
-				// In a future step, we can structure these payloads further.
 				logger.Warn("Anomaly detected", "details", anomaly)
-				fmt.Println(anomaly) // Print to stdout for immediate visibility
+				fmt.Println(anomaly)
 			case sig := <-sigChan:
 				logger.Info("Shutting down Lynx FIM", "signal", sig.String())
 				close(stop)

@@ -20,19 +20,16 @@ and saves a signed baseline.json for future integrity verification.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.LoadConfig(cfgFile)
 		if err != nil {
-			fmt.Printf("Error loading config: %v
-", err)
+			fmt.Printf("Error loading config: %v\n", err)
 			os.Exit(1)
 		}
 
 		if err := app.CreateBaseline(cfg, baselineOutput); err != nil {
-			fmt.Printf("Error creating baseline: %v
-", err)
+			fmt.Printf("Error creating baseline: %v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Successfully created baseline: %s
-", baselineOutput)
+		fmt.Printf("Successfully created baseline: %s\n", baselineOutput)
 	},
 }
 

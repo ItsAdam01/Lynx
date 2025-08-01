@@ -17,12 +17,10 @@ This file defines which paths and files the agent should monitor.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path := "config.yaml"
 		if err := config.InitConfig(path); err != nil {
-			fmt.Printf("Error: %v
-", err)
+			fmt.Printf("Error: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Successfully initialized configuration: %s
-", path)
+		fmt.Printf("Successfully initialized configuration: %s\n", path)
 	},
 }
 

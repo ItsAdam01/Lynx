@@ -96,3 +96,17 @@ Phase 2 is now officially complete. I've wired up the real-time monitor to the C
 - [x] Long-running `lynx start` command with graceful shutdown.
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Transitioning to Real-time defense.*
+
+## Milestone 10: Closing the Loop - Alerting and Hardening (August 1, 2025)
+
+It is August 2025, the final month of my initial learning roadmap. I have a working monitor, but a security agent is only useful if it can actually tell someone when something is wrong. 
+
+**The Goal:** I'm building a webhook alerting pipeline. I want Lynx FIM to send a JSON payload to Slack or Discord the moment an anomaly is detected. This involves learning about Go's `net/http` package and how to handle asynchronous task dispatching.
+
+**The Hardening:** I'm also going to implement the `lynx verify` command for manual audits and look into how I can make the binary even more secure. This month is about taking this from a "project" to a "tool."
+
+### Technical Achievements (Phase 3 Start):
+- [x] Researched Webhook payloads for Slack and Discord.
+- [ ] Implement an asynchronous alert dispatcher with TDD.
+- [ ] Develop the `lynx verify` manual audit command.
+- [ ] Finalize cross-compilation for production-ready binaries.
