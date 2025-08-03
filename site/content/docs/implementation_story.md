@@ -83,30 +83,25 @@ Phase 2 is now officially complete. I've wired up the real-time monitor to the C
 
 **The Breakthrough:** Bringing everything together in `cmd/start.go` was incredibly satisfying. The agent now loads the configuration, verifies the signed baseline, initializes the JSON logger, and blocks indefinitely while listening for file system events. It even handles termination signals (`SIGINT`, `SIGTERM`) gracefully.
 
-### Technical Achievements (Phase 2 Complete):
+## Milestone 10: Real-time Alerting and Manual Audits (August 3, 2025)
+
+It is August 2025, and I'm entering the final phase of my initial learning roadmap. This month is about getting these alerts out of the log files and into a platform like Slack or Discord.
+
+**The Breakthrough:** I successfully implemented the Webhook alerting pipeline today. Using TDD, I verified that my agent can now send a structured JSON payload to any configured webhook URL. This means I can get security alerts on my phone the moment a critical system file is touched.
+
+**The Audit Tool:** I've also implemented the `lynx verify` command. This is useful for manual audits where I want to do a "clean sweep" and compare the entire system against the baseline without running a persistent agent. 
+
+**The Lesson:** I learned about the power of `net/http` and `httptest` in Go. Writing tests for the webhook required me to mock a web server, which was a great exercise in understanding how HTTP requests are actually structured and sent.
+
+### Technical Achievements:
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
 - [x] Recursive file system traversal with absolute path resolution.
 - [x] HMAC-signed JSON storage for the baseline with tamper detection.
-- [x] CLI implementation for `lynx init` and `lynx baseline`.
+- [x] CLI implementation for `lynx init`, `lynx baseline`, `lynx start`, and `lynx verify`.
 - [x] Core real-time monitoring with `fsnotify`.
 - [x] Recursive directory watching and anomaly detection logic.
-- [x] Structured JSON logging using `log/slog`.
-- [x] Long-running `lynx start` command with graceful shutdown.
+- [x] Structured JSON logging and Webhook alerting for Slack/Discord.
 
-> "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Transitioning to Real-time defense.*
-
-## Milestone 10: Closing the Loop - Alerting and Hardening (August 1, 2025)
-
-It is August 2025, the final month of my initial learning roadmap. I have a working monitor, but a security agent is only useful if it can actually tell someone when something is wrong. 
-
-**The Goal:** I'm building a webhook alerting pipeline. I want Lynx FIM to send a JSON payload to Slack or Discord the moment an anomaly is detected. This involves learning about Go's `net/http` package and how to handle asynchronous task dispatching.
-
-**The Hardening:** I'm also going to implement the `lynx verify` command for manual audits and look into how I can make the binary even more secure. This month is about taking this from a "project" to a "tool."
-
-### Technical Achievements (Phase 3 Start):
-- [x] Researched Webhook payloads for Slack and Discord.
-- [ ] Implement an asynchronous alert dispatcher with TDD.
-- [ ] Develop the `lynx verify` manual audit command.
-- [ ] Finalize cross-compilation for production-ready binaries.
+> "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*
