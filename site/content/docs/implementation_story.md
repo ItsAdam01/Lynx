@@ -93,6 +93,14 @@ It is August 2025, and I'm entering the final phase of my initial learning roadm
 
 **The Lesson:** I learned about the power of `net/http` and `httptest` in Go. Writing tests for the webhook required me to mock a web server, which was a great exercise in understanding how HTTP requests are actually structured and sent.
 
+## Milestone 11: Speed and Security - Asynchronous Alerting (August 5, 2025)
+
+As I tested the agent, I noticed a problem: if the webhook server is slow, my whole monitoring loop blocks while it waits for a response. In a security tool, that's unacceptable. Every millisecond of delay is a window for an attacker.
+
+**The Breakthrough:** I implemented an asynchronous `AlertDispatcher` today using Go's channels and goroutines. Now, when the agent detects an anomaly, it simply "drops" the alert into a channel and gets back to monitoring immediately. A separate background process picks up the alert and handles the network delivery.
+
+**The Lesson:** This was my first real experience with Go's concurrency patterns in a production-like scenario. Learning how to use a `select` statement to handle both outgoing alerts and a "stop" signal was a major milestone for me. It makes the agent feel much more professional and robust.
+
 ### Technical Achievements:
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
@@ -102,6 +110,6 @@ It is August 2025, and I'm entering the final phase of my initial learning roadm
 - [x] CLI implementation for `lynx init`, `lynx baseline`, `lynx start`, and `lynx verify`.
 - [x] Core real-time monitoring with `fsnotify`.
 - [x] Recursive directory watching and anomaly detection logic.
-- [x] Structured JSON logging and Webhook alerting for Slack/Discord.
+- [x] Structured JSON logging and Asynchronous Webhook alerting.
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*
