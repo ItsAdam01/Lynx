@@ -101,6 +101,14 @@ As I tested the agent, I noticed a problem: if the webhook server is slow, my wh
 
 **The Lesson:** This was my first real experience with Go's concurrency patterns in a production-like scenario. Learning how to use a `select` statement to handle both outgoing alerts and a "stop" signal was a major milestone for me. It makes the agent feel much more professional and robust.
 
+## Milestone 12: The Final Connection (August 8, 2025)
+
+Today I officially "closed the loop" by integrating the asynchronous alert dispatcher into the `lynx start` command. 
+
+**The Breakthrough:** It was a moment of pure satisfaction to see all the pieces working together. The agent now initializes the monitor, starts the background dispatcher, and then sits in a non-blocking loop waiting for file events. When an anomaly is detected, it's logged to JSON and then immediately "fired off" to the webhook channel.
+
+**The Lesson:** I learned about the importance of channel buffering. By giving my `anomalies` and `alertChan` channels a small buffer, I've made the system even more resilient to bursts of file system activity. It's a small detail, but in a security tool, it's the difference between catching every event and missing a critical breach.
+
 ### Technical Achievements:
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
@@ -111,5 +119,6 @@ As I tested the agent, I noticed a problem: if the webhook server is slow, my wh
 - [x] Core real-time monitoring with `fsnotify`.
 - [x] Recursive directory watching and anomaly detection logic.
 - [x] Structured JSON logging and Asynchronous Webhook alerting.
+- [x] Fully integrated, non-blocking alerting pipeline.
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*
