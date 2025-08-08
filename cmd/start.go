@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/ItsAdam01/Lynx/internal/alert"
 	"github.com/ItsAdam01/Lynx/internal/app"
 	"github.com/ItsAdam01/Lynx/internal/config"
 	"github.com/ItsAdam01/Lynx/internal/fs"
@@ -20,7 +21,8 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start real-time file integrity monitoring",
 	Long: `Loads the configured baseline and begins watching the file system 
-for any unauthorized changes using inotify. Events are logged in JSON format.`,
+for any unauthorized changes using inotify. Events are logged in JSON format
+and dispatched asynchronously to the configured webhook.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.LoadConfig(cfgFile)
 		if err != nil {
@@ -49,13 +51,18 @@ for any unauthorized changes using inotify. Events are logged in JSON format.`,
 
 		logger.Info("Starting Lynx FIM agent", "agent_name", cfg.AgentName, "total_baseline_files", baseline.Metadata.TotalFiles)
 
-		// Set up signal handling for graceful shutdown
+		// Set up synchronization and channels
 		stop := make(chan struct{})
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 		anomalies := make(chan string, 100)
+		alertChan := make(chan alert.Alert, 100)
 
+		// 1. Start the asynchronous alert dispatcher
+		go alert.StartDispatcher(cfg.WebhookURL, alertChan, stop)
+
+		// 2. Start the real-time monitoring system
 		go func() {
 			if err := app.StartMonitoring(cfg, baseline, anomalies, stop); err != nil {
 				logger.Error("Monitor failed", "error", err.Error())
@@ -69,6 +76,10 @@ for any unauthorized changes using inotify. Events are logged in JSON format.`,
 			case anomaly := <-anomalies:
 				logger.Warn("Anomaly detected", "details", anomaly)
 				fmt.Println(anomaly)
+
+				// 3. Dispatch the alert asynchronously
+				alertChan <- alert.NewAlert(cfg.AgentName, "CRITICAL", "FILE_CHANGE", "multiple", anomaly)
+
 			case sig := <-sigChan:
 				logger.Info("Shutting down Lynx FIM", "signal", sig.String())
 				close(stop)
