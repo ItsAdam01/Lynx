@@ -109,7 +109,15 @@ Today I officially "closed the loop" by integrating the asynchronous alert dispa
 
 **The Lesson:** I learned about the importance of channel buffering. By giving my `anomalies` and `alertChan` channels a small buffer, I've made the system even more resilient to bursts of file system activity. It's a small detail, but in a security tool, it's the difference between catching every event and missing a critical breach.
 
-### Technical Achievements:
+## Milestone 13: Ready for Deployment - Build Automation (August 15, 2025)
+
+As I wrap up this project, I've moved from writing code to thinking about how others will use it. I've implemented a `Makefile` to handle building, testing, and cross-compiling the Lynx FIM agent.
+
+**The Breakthrough:** With one command, I can now run my entire test suite and build binaries for both `amd64` and `arm64` Linux servers. This is a major step toward making the agent "production-ready." It feels like I've built a real tool, not just a learning project.
+
+**The Lesson:** I learned that automation is just as important as the code itself. By building the testing into my `Makefile`, I've ensured that I never accidentally ship a binary that hasn't passed all my integrity checks. 
+
+### Technical Achievements (Phase 3 Complete):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
@@ -120,5 +128,8 @@ Today I officially "closed the loop" by integrating the asynchronous alert dispa
 - [x] Recursive directory watching and anomaly detection logic.
 - [x] Structured JSON logging and Asynchronous Webhook alerting.
 - [x] Fully integrated, non-blocking alerting pipeline.
+- [x] Automated build system and cross-compilation with `Makefile`.
+
+> "A tool is only as good as the process that builds it. Automation is the final layer of defense." - *Completing the August 2025 roadmap.*
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*
