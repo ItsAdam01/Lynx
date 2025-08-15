@@ -15,7 +15,7 @@ func TestMonitor_BasicEvent(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
-	
+
 	m, err := NewMonitor([]string{tmpDir})
 	if err != nil {
 		t.Fatalf("Failed to create monitor: %v", err)
@@ -23,7 +23,7 @@ func TestMonitor_BasicEvent(t *testing.T) {
 	defer m.Close()
 
 	events := make(chan fsnotify.Event, 10)
-	
+
 	go func() {
 		m.Start(events)
 	}()

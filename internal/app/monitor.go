@@ -10,7 +10,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// StartMonitoring initializes the real-time event monitor and begins the 
+// StartMonitoring initializes the real-time event monitor and begins the
 // anomaly detection loop.
 func StartMonitoring(cfg *config.Config, b *fs.Baseline, anomalies chan<- string, stop <-chan struct{}) error {
 	m, err := monitor.NewMonitor(cfg.PathsToWatch)

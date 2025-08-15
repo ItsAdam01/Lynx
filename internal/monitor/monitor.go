@@ -65,7 +65,7 @@ func (m *Monitor) Start(eventChan chan<- fsnotify.Event) error {
 				return nil
 			}
 
-			// If a new directory is created, we MUST add it to the watcher 
+			// If a new directory is created, we MUST add it to the watcher
 			// to ensure recursive watching works in real-time.
 			if event.Op&fsnotify.Create == fsnotify.Create {
 				info, err := os.Stat(event.Name)

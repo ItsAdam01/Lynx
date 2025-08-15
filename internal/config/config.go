@@ -9,12 +9,12 @@ import (
 
 // Config represents the agent's configuration.
 type Config struct {
-	AgentName      string   `mapstructure:"agent_name"`
-	HmacSecretEnv  string   `mapstructure:"hmac_secret_env"`
-	LogFile        string   `mapstructure:"log_file"`
-	WebhookURL     string   `mapstructure:"webhook_url"`
-	PathsToWatch   []string `mapstructure:"paths_to_watch"`
-	FilesToWatch   []string `mapstructure:"files_to_watch"`
+	AgentName     string   `mapstructure:"agent_name"`
+	HmacSecretEnv string   `mapstructure:"hmac_secret_env"`
+	LogFile       string   `mapstructure:"log_file"`
+	WebhookURL    string   `mapstructure:"webhook_url"`
+	PathsToWatch  []string `mapstructure:"paths_to_watch"`
+	FilesToWatch  []string `mapstructure:"files_to_watch"`
 }
 
 // LoadConfig reads the configuration from config.yaml or environment variables.

@@ -37,7 +37,7 @@ func NewBaseline(hashes map[string]string) *Baseline {
 func (b *Baseline) Save(path, secret string) error {
 	// Clear signature before signing
 	b.Signature = ""
-	
+
 	payload, err := json.Marshal(b)
 	if err != nil {
 		return fmt.Errorf("failed to marshal baseline: %w", err)

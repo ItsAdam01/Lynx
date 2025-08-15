@@ -11,7 +11,7 @@ import (
 
 func TestVerifyIntegrity(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	// 1. Setup a baseline
 	testFile := filepath.Join(tmpDir, "monitored.txt")
 	content := []byte("original content")
@@ -20,7 +20,7 @@ func TestVerifyIntegrity(t *testing.T) {
 	}
 
 	cfg := &config.Config{
-		PathsToWatch: []string{tmpDir},
+		PathsToWatch:  []string{tmpDir},
 		HmacSecretEnv: "LYNX_HMAC_SECRET",
 	}
 	secret := "test-secret"
@@ -57,7 +57,7 @@ func TestVerifyIntegrity(t *testing.T) {
 			break
 		}
 	}
-	
+
 	if !found {
 		t.Errorf("Expected report for modified file %s, but was not found", testFile)
 	}

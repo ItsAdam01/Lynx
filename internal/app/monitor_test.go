@@ -12,7 +12,7 @@ import (
 
 func TestMonitorAndDetect(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	// 1. Setup a baseline
 	testFile := filepath.Join(tmpDir, "monitored.txt")
 	content := []byte("original content")
@@ -21,7 +21,7 @@ func TestMonitorAndDetect(t *testing.T) {
 	}
 
 	cfg := &config.Config{
-		PathsToWatch: []string{tmpDir},
+		PathsToWatch:  []string{tmpDir},
 		HmacSecretEnv: "LYNX_HMAC_SECRET",
 	}
 	secret := "test-secret"
@@ -39,7 +39,7 @@ func TestMonitorAndDetect(t *testing.T) {
 	// We'll use a channel to capture detected anomalies
 	anomalies := make(chan string, 10)
 	stop := make(chan struct{})
-	
+
 	go func() {
 		// Mocked or actual start logic
 		StartMonitoring(cfg, b, anomalies, stop)
@@ -62,6 +62,6 @@ func TestMonitorAndDetect(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("Timed out waiting for anomaly detection")
 	}
-	
+
 	close(stop)
 }

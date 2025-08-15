@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-// ScanTargets takes a list of paths (directories or files) and returns a slice 
+// ScanTargets takes a list of paths (directories or files) and returns a slice
 // of all unique absolute file paths found.
 func ScanTargets(targets []string) ([]string, error) {
 	fileMap := make(map[string]struct{})

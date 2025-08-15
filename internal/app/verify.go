@@ -8,7 +8,7 @@ import (
 	"github.com/ItsAdam01/Lynx/internal/fs"
 )
 
-// VerifyIntegrity performs a one-off, manual comparison of the entire configured 
+// VerifyIntegrity performs a one-off, manual comparison of the entire configured
 // file system against the memory-loaded baseline.
 func VerifyIntegrity(cfg *config.Config, b *fs.Baseline) ([]string, error) {
 	var reports []string

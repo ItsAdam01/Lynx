@@ -11,7 +11,7 @@ import (
 
 func TestCreateBaseline(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	// 1. Create a dummy file to monitor
 	testFile := filepath.Join(tmpDir, "monitored.txt")
 	if err := os.WriteFile(testFile, []byte("content"), 0644); err != nil {
@@ -20,10 +20,10 @@ func TestCreateBaseline(t *testing.T) {
 
 	// 2. Setup a dummy config
 	cfg := &config.Config{
-		PathsToWatch: []string{tmpDir},
+		PathsToWatch:  []string{tmpDir},
 		HmacSecretEnv: "LYNX_HMAC_SECRET",
 	}
-	
+
 	secret := "test-secret"
 	os.Setenv("LYNX_HMAC_SECRET", secret)
 	defer os.Unsetenv("LYNX_HMAC_SECRET")
