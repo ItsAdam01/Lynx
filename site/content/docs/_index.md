@@ -3,24 +3,24 @@ title: "Introduction"
 weight: 1
 ---
 
-# Lynx FIM: A Learning Journey in Host Intrusion Detection
+# Lynx FIM Documentation
 
-Welcome to the documentation for **Lynx FIM**, a lightweight host-based intrusion detection agent (HIDS) I'm building in Go. This project is a centerpiece of my self-directed study in cybersecurity, specifically focused on file integrity and real-time system monitoring.
+Welcome to the documentation for **Lynx FIM**, a lightweight host-based intrusion detection agent built in Go. This site is organized into two primary sections to help you navigate the project.
 
-## Purpose
+## 🗺️ How to Use These Docs
 
-As I transition from general software development into the cybersecurity space, I've found that the best way to understand a system's defense is to build it yourself. Lynx FIM is my way of learning:
+### [🚀 Usage Guide]({{< relref "usage/installation.md" >}})
+If you want to run Lynx FIM on your system, start here. This section covers:
+-   **[Installation & Setup]({{< relref "usage/installation.md" >}})**: How to build the agent and configure webhooks.
+-   **[General Features]({{< relref "usage/features.md" >}})**: An overview of the agent's capabilities.
 
-1.  **Integrity at Scale:** How we establish a "Source of Truth" (a baseline) for thousands of system files and ensure it remains untampered.
-2.  **Kernel-level Monitoring:** How we can leverage OS-specific hooks (like Linux `inotify`) to detect unauthorized changes the moment they happen.
-3.  **Modern Alerting:** How we can pipe these security events into a modern alerting infrastructure like Slack, Discord, or a centralized SOC.
+### [💻 Development & Research]({{< relref "development/technical_specs.md" >}})
+If you're interested in the "how" and "why" behind the tool, explore this section:
+-   **[Technical Specifications]({{< relref "development/technical_specs.md" >}})**: My research into Go, Cryptography, and Kernel events.
+-   **[Implementation Story]({{< relref "development/implementation_story.md" >}})**: A milestone-by-milestone log of my learning journey.
+-   **[Implementation Plan]({{< relref "development/implementation_plan.md" >}})**: The original roadmap for Summer 2025.
+-   **[Requirements]({{< relref "development/requirements.md" >}})**: What I defined as essential for a modern FIM.
 
-## Documentation Structure
+---
 
-This documentation site is where I'm organizing my thoughts, technical research, and the long-term implementation plan for the project.
-
--   **Requirements:** What a modern FIM agent actually *needs* to do.
--   **Technical Specs:** The "how" behind the code—my research into crypto, Go, and system events.
--   **Implementation Plan:** My roadmap for Summer 2025, from a basic CLI to a fully functional HIDS.
-
-> **Note:** This project is part of a 2-month intensive learning cycle from June to August 2025.
+> **Note:** This project is part of a 2-month intensive learning cycle from June to August 2025. I'm building this from scratch to truly understand the core concepts of system security.

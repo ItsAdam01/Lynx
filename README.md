@@ -11,11 +11,12 @@ I have created a comprehensive documentation site using Hugo to organize my rese
 ### How to access the docs:
 1. Ensure you have Hugo installed.
 2. Navigate to the `site/` directory.
-3. Run the development server:
-   ```bash
-   hugo server -D
-   ```
+3. Run the development server: `hugo server -D`
 4. Visit **`http://localhost:1313/`** in your browser.
+
+You can also browse the documentation source directly:
+- **[Usage Guide](site/content/docs/usage/installation.md)**: How to build, configure, and run the agent.
+- **[Implementation Story](site/content/docs/development/implementation_story.md)**: My step-by-step learning journey and milestones.
 
 ---
 
@@ -29,7 +30,7 @@ If you want to jump straight into using the tool:
 4. **Baseline:** `./bin/lynx baseline`
 5. **Monitor:** `./bin/lynx start`
 
-For detailed instructions on Discord webhook setup and manual auditing, see the **[Usage Guide]** on the documentation site.
+For detailed instructions on Discord webhook setup and manual auditing, see the **[Usage Guide](site/content/docs/usage/installation.md)**.
 
 ## 🛠️ Features I've Implemented
 - **SHA-256 Hashing:** Unique digital fingerprints for every file.
@@ -39,7 +40,7 @@ For detailed instructions on Discord webhook setup and manual auditing, see the 
 - **Asynchronous Alerting:** Background webhook delivery for high performance.
 
 ## 💻 Development & Persona
-This project is part of my self-directed study into system security. I've documented every hurdle and breakthrough in the **[Implementation Story]** on the project site.
+This project is part of my self-directed study into system security. I've documented every hurdle and breakthrough in the **[Implementation Story](site/content/docs/development/implementation_story.md)**.
 
 - **Identity:** Adam Atienza
 - **Timeline:** June 2025 – August 2025

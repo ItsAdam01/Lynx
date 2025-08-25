@@ -15,16 +15,16 @@ Lynx FIM monitors critical system files for unauthorized changes. By establishin
 
 I've organized the documentation to serve two different purposes:
 
-### [🚀 Usage Guide]({{< relref "docs/usage/installation" >}})
+### [🚀 Usage Guide]({{< relref "docs/usage/installation.md" >}})
 Learn how to install, configure, and run Lynx on your own servers.
-- **[Installation & Setup]({{< relref "docs/usage/installation" >}})**: Binary builds and Discord integration.
-- **[General Features]({{< relref "docs/usage/features" >}})**: What Lynx can do for your security.
+- **[Installation & Setup]({{< relref "docs/usage/installation.md" >}})**: Binary builds and Discord integration.
+- **[General Features]({{< relref "docs/usage/features.md" >}})**: What Lynx can do for your security.
 
-### [💻 Development & Research]({{< relref "docs/development/technical_specs" >}})
+### [💻 Development & Research]({{< relref "docs/development/technical_specs.md" >}})
 Deep dive into the architecture, the learning journey, and how I built the tool.
-- **[Technical Specifications]({{< relref "docs/development/technical_specs" >}})**: Go, Cryptography, and Kernel events.
-- **[Implementation Story]({{< relref "docs/development/implementation_story" >}})**: My milestones and lessons learned during Summer 2025.
-- **[Proof of Concept]({{< relref "docs/development/demonstration" >}})**: Seeing Lynx in action with actual log outputs.
+- **[Technical Specifications]({{< relref "docs/development/technical_specs.md" >}})**: Go, Cryptography, and Kernel events.
+- **[Implementation Story]({{< relref "docs/development/implementation_story.md" >}})**: My milestones and lessons learned during Summer 2025.
+- **[Proof of Concept]({{< relref "docs/development/demonstration.md" >}})**: Seeing Lynx in action with actual log outputs.
 
 ---
 
