@@ -1,0 +1,38 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "release" ]
+  pull_request:
+    branches: [ "release" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Install dependencies
+      run: go mod tidy
+
+    - name: Run Tests
+      run: go test -v ./...
+
+    - name: Build Linux AMD64
+      run: |
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/lynx-linux-amd64 main.go
+
+    - name: Build Linux ARM64
+      run: |
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/lynx-linux-arm64 main.go
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: lynx-binaries
+        path: bin/
