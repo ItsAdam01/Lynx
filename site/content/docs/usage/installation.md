@@ -3,61 +3,85 @@ title: "Installation & Setup"
 weight: 1
 ---
 
-# Installation and Setup
+# Installation and Setup Guide
 
-Getting Lynx FIM up and running involves three main steps: building the binary, setting up your environment, and initializing the configuration.
+This guide covers everything you need to get Lynx FIM running on your system, from compiling the source code to choosing which directories to monitor.
 
-## 1. Build from Source
+## 1. Supported Platforms
 
-Since I built Lynx in Go, you can compile it into a single, static binary. 
+Lynx FIM is built in Go and leverages the Linux kernel's `inotify` system for real-time monitoring.
+
+- **Primary Support:** Linux (Ubuntu, Debian, CentOS, RHEL, etc.).
+- **Architecture:** AMD64 and ARM64.
+- **Other OS:** While it will compile on macOS or Windows, the real-time recursive monitoring features are optimized for Linux.
+
+## 2. Build and Installation
 
 ### Prerequisites
-- Go 1.22 or higher installed on your system.
+- **Go 1.22+**: Required to compile the source.
+- **Make**: Recommended for using the automated build script.
 
-### Steps
+### Compilation Steps
 1. Clone the repository:
    ```bash
    git clone https://github.com/ItsAdam01/Lynx.git
    cd Lynx
    ```
-2. Build the binary using the provided Makefile:
+2. Build for your current architecture:
    ```bash
    make build
    ```
-The executable will be located in the `bin/` directory.
+3. (Optional) Install to your path:
+   ```bash
+   sudo cp bin/lynx /usr/local/bin/
+   ```
 
-## 2. Setting up the Alert Webhook (Discord)
+## 3. Configuration Setup
 
-Lynx supports sending real-time alerts to Discord. Here is how I set mine up for testing:
-
-1. Open Discord and go to your **Server Settings**.
-2. Navigate to **Integrations** > **Webhooks**.
-3. Click **New Webhook**.
-4. Give it a name (like "Lynx Security Bot") and select the channel where alerts should appear.
-5. Click **Copy Webhook URL**. You will need this for your configuration.
-
-## 3. Environment and Secrets
-
-Lynx uses an environment variable to store the HMAC secret key. This key is used to sign your baseline file so it can't be tampered with.
-
-I recommend using a `.env` file for local development (though you should never commit it!).
-
-### Sample .env File
+### Step 1: Initialize
+Generate a default configuration file in your current directory:
 ```bash
-# The secret key used for baseline integrity
-LYNX_HMAC_SECRET="your-super-long-random-secret-key"
+lynx init
 ```
 
-To load it before running Lynx:
+### Step 2: The HMAC Secret
+Lynx requires a secret key to protect the integrity of its baseline. You must set this as an environment variable. I learned that keeping secrets out of config files is a major security best practice.
+
 ```bash
-export LYNX_HMAC_SECRET="your-super-long-random-secret-key"
+export LYNX_HMAC_SECRET="use-a-very-long-random-string-here"
 ```
 
-## 4. Initialize Lynx
+### Step 3: Configure `config.yaml`
+Open the generated `config.yaml`. Here is a sample of how I configured mine:
 
-Run the init command to generate a default `config.yaml`:
-```bash
-./bin/lynx init
+```yaml
+agent_name: "prod-web-server-01"
+log_file: "./lynx.log"
+webhook_url: "https://discord.com/api/webhooks/..." # Your Discord Webhook
+
+# Directories to monitor recursively
+paths_to_watch:
+  - "/etc/ssh"
+  - "/etc/pam.d"
+  - "/usr/local/bin"
+
+# Specific critical files
+files_to_watch:
+  - "/etc/passwd"
+  - "/etc/shadow"
+  - "/etc/hosts"
 ```
 
-Open `config.yaml` and paste your Discord Webhook URL into the `webhook_url` field. You can also customize which directories Lynx should watch.
+## 4. Directory Recommendations
+
+Choosing what to watch is a balance between security and performance. Here is what I discovered during my research:
+
+### ✅ Recommended to Watch
+- **/etc/**: Contains almost all system configuration files.
+- **/usr/bin/ or /usr/local/bin/**: Where system executables live. Watching these helps detect "binary replacement" attacks.
+- **/root/.ssh/**: To monitor for unauthorized SSH keys being added.
+
+### ❌ Not Recommended to Watch
+- **/proc/ or /sys/**: These are virtual file systems managed by the kernel; they change constantly and will flood you with alerts.
+- **/var/log/**: Logs change every second. Monitoring them with a FIM will cause a loop of alerts.
+- **/tmp/**: High-noise directory used by many applications for temporary storage.

@@ -17,8 +17,9 @@ I've organized the documentation to serve two different purposes:
 
 ### [🚀 Usage Guide]({{< relref "docs/usage/installation.md" >}})
 Learn how to install, configure, and run Lynx on your own servers.
-- **[Installation & Setup]({{< relref "docs/usage/installation.md" >}})**: Binary builds and Discord integration.
+- **[Installation & Setup]({{< relref "docs/usage/installation.md" >}})**: Binary builds and configuration.
 - **[General Features]({{< relref "docs/usage/features.md" >}})**: What Lynx can do for your security.
+- **[Command Reference]({{< relref "docs/usage/commands.md" >}})**: Detailed syntax for all CLI commands.
 
 ### [💻 Development & Research]({{< relref "docs/development/technical_specs.md" >}})
 Deep dive into the architecture, the learning journey, and how I built the tool.

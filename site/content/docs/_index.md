@@ -11,8 +11,9 @@ Welcome to the documentation for **Lynx FIM**, a lightweight host-based intrusio
 
 ### [🚀 Usage Guide]({{< relref "usage/installation.md" >}})
 If you want to run Lynx FIM on your system, start here. This section covers:
--   **[Installation & Setup]({{< relref "usage/installation.md" >}})**: How to build the agent and configure webhooks.
+-   **[Installation & Setup]({{< relref "usage/installation.md" >}})**: How to build the agent and configure it.
 -   **[General Features]({{< relref "usage/features.md" >}})**: An overview of the agent's capabilities.
+-   **[Command Reference]({{< relref "usage/commands.md" >}})**: Detailed syntax for all CLI commands.
 
 ### [💻 Development & Research]({{< relref "development/technical_specs.md" >}})
 If you're interested in the "how" and "why" behind the tool, explore this section:
