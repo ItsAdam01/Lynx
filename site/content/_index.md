@@ -18,13 +18,14 @@ I've organized the documentation to serve two different purposes:
 ### [🚀 Usage Guide]({{< relref "docs/usage/installation.md" >}})
 Learn how to install, configure, and run Lynx on your own servers.
 - **[Installation & Setup]({{< relref "docs/usage/installation.md" >}})**: Binary builds and configuration.
-- **[General Features]({{< relref "docs/usage/features.md" >}})**: What Lynx can do for your security.
 - **[Command Reference]({{< relref "docs/usage/commands.md" >}})**: Detailed syntax for all CLI commands.
+- **[Isolated Lab Testing]({{< relref "docs/usage/isolated_testing.md" >}})**: Experimental single-directory testing guide.
 
 ### [💻 Development & Research]({{< relref "docs/development/technical_specs.md" >}})
 Deep dive into the architecture, the learning journey, and how I built the tool.
 - **[Technical Specifications]({{< relref "docs/development/technical_specs.md" >}})**: Go, Cryptography, and Kernel events.
 - **[Implementation Story]({{< relref "docs/development/implementation_story.md" >}})**: My milestones and lessons learned during Summer 2025.
+- **[Performance Analysis]({{< relref "docs/development/performance.md" >}})**: Benchmark results and efficiency research.
 - **[Proof of Concept]({{< relref "docs/development/demonstration.md" >}})**: Seeing Lynx in action with actual log outputs.
 
 ---

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -44,5 +45,25 @@ func TestCreateBaseline(t *testing.T) {
 
 	if b.Metadata.TotalFiles != 1 {
 		t.Errorf("Expected 1 file in baseline, got %d", b.Metadata.TotalFiles)
+	}
+}
+
+func BenchmarkCreateBaseline_100Files(b *testing.B) {
+	tmpDir := b.TempDir()
+	for i := 0; i < 100; i++ {
+		path := filepath.Join(tmpDir, fmt.Sprintf("file-%d.txt", i))
+		os.WriteFile(path, []byte("some repetitive content for hashing"), 0644)
+	}
+
+	cfg := &config.Config{
+		PathsToWatch:  []string{tmpDir},
+		HmacSecretEnv: "LYNX_HMAC_SECRET",
+	}
+	os.Setenv("LYNX_HMAC_SECRET", "bench-secret")
+	baselinePath := filepath.Join(tmpDir, "baseline.json")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CreateBaseline(cfg, baselinePath)
 	}
 }
