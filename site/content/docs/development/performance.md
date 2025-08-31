@@ -59,3 +59,18 @@ This is the "Idle Defense" phase where the agent waits for events.
     *   When an event occurs, the agent only re-hashes the **specific file** that changed. This takes {{< katex >}}O(S){{< /katex >}} where {{< katex >}}S{{< /katex >}} is the size of that modified file. Comparison with the in-memory baseline is a map lookup, which is {{< katex >}}O(1){{< /katex >}} on average.
 *   **Space Complexity:** {{< katex >}}O(N \cdot P){{< /katex >}}
     *   The agent maintains the full baseline in memory to allow for instant comparisons when a file event is received.
+
+## 5. Portability and Static Compilation
+
+One of the biggest wins I discovered during this project is Go's approach to compilation.
+
+### Targeting Distributions vs. Architectures
+I initially wondered if I needed to build separate versions for Ubuntu, CentOS, and Debian. My research taught me that because Go produces **statically linked binaries** (especially with `CGO_ENABLED=0`), the agent includes all the libraries it needs to run. 
+
+This means a single binary built for `linux-amd64` will run on almost any modern Linux distribution without requiring any dependencies (like Python or GLIBC) to be installed on the target server.
+
+### CI/CD Automation
+I've implemented a GitHub Actions workflow to automate this process. Every time I push code, the system:
+1.  Runs all unit tests to ensure no regressions.
+2.  Cross-compiles the binary for both **AMD64** (Standard Servers) and **ARM64** (AWS Graviton / Raspberry Pi).
+3.  Uploads the finished binaries as build artifacts.

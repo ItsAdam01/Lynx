@@ -99,8 +99,6 @@ As I tested the agent, I noticed a problem: if the webhook server is slow, my wh
 
 **The Breakthrough:** I implemented an asynchronous `AlertDispatcher` today using Go's channels and goroutines. Now, when the agent detects an anomaly, it simply "drops" the alert into a channel and gets back to monitoring immediately. A separate background process picks up the alert and handles the network delivery.
 
-**The Lesson:** This was my first real experience with Go's concurrency patterns in a production-like scenario. Learning how to use a `select` statement to handle both outgoing alerts and a "stop" signal was a major milestone for me. It makes the agent feel much more professional and robust.
-
 ## Milestone 12: The Final Connection (August 8, 2025)
 
 Today I officially "closed the loop" by integrating the asynchronous alert dispatcher into the `lynx start` command. 
@@ -115,17 +113,31 @@ As I wrap up this project, I've moved from writing code to thinking about how ot
 
 **The Breakthrough:** With one command, I can now run my entire test suite and build binaries for both `amd64` and `arm64` Linux servers. This is a major step toward making the agent "production-ready." It feels like I've built a real tool, not just a learning project.
 
-**The Lesson:** I learned that automation is just as important as the code itself. By building the testing into my `Makefile`, I've ensured that I never accidentally ship a binary that hasn't passed all my integrity checks. 
-
 ## Milestone 14: Final Audit and Proof of Concept (August 15, 2025)
 
 Today I performed the final end-to-end manual test of the Lynx FIM agent. I've vetted the codebase with `go fmt` and `go vet`, and then I ran the agent through its paces in a simulated security scenario.
 
 **The Breakthrough:** Seeing the `lynx verify` command catch my manual tampering with a "critical" test file was incredibly rewarding. But even better was watching the structured JSON logs populate in real-time as I modified files while the agent was running in the background. 
 
-**The Conclusion:** As of August 15, 2025, Lynx FIM is no longer just a "learning project"—it's a functional, tested, and documented host-based intrusion detection tool. I've achieved my core goals of understanding integrity, real-time monitoring, and secure alerting.
+## Milestone 15: The Final Layer - CI/CD and Portability (August 28, 2025)
 
-### Technical Achievements (Project Complete):
+The final piece of the puzzle was automating the build process using GitHub Actions.
+
+**The Research:** I learned that because Go binaries are statically compiled, I don't need to target specific Linux distros like Ubuntu or CentOS. As long as I target the correct architecture (AMD64 or ARM64), the binary carries everything it needs to run.
+
+**The Breakthrough:** I successfully set up a GitHub Workflow that automatically builds and tests the agent on every push. It's a professional touch that ensures the project is always in a "shippable" state. It's the perfect way to conclude this 2-month intensive learning cycle.
+
+## Milestone 16: The Webhook Mystery - Discord Compatibility (August 31, 2025)
+
+I hit a major roadblock today: my webhook alerts were sending successfully from the agent, but nothing was appearing in Discord.
+
+**The Research:** I dug into the Discord Webhook documentation and realized my mistake. Discord (and Slack) don't just display a raw JSON dump. They expect a specific field—usually `content` for Discord or `text` for Slack—to actually show a message. My original JSON payload was being ignored because it didn't have these fields.
+
+**The Breakthrough:** I updated my `Alert` struct to include both `content` and `text` fields. I also updated the `NewAlert` function to automatically format a nice, readable summary with emojis and bold text. Now, the alerts look professional and are instantly visible in Discord.
+
+**The Lesson:** Security tools need to speak the language of the platforms they integrate with. Always read the API documentation carefully!
+
+### Technical Achievements (Final Build):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
@@ -138,6 +150,8 @@ Today I performed the final end-to-end manual test of the Lynx FIM agent. I've v
 - [x] Fully integrated, non-blocking alerting pipeline.
 - [x] Automated build system and cross-compilation with `Makefile`.
 - [x] Final codebase vetting and end-to-end proof-of-concept validation.
+- [x] GitHub Actions CI/CD pipeline for automated testing and releases.
+- [x] **Verified Discord and Slack compatibility for webhook alerts.**
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 
@@ -147,7 +161,3 @@ Today I performed the final end-to-end manual test of the Lynx FIM agent. I've v
 - **[Proof of Concept]({{< relref "demonstration.md" >}})**: Seeing Lynx in action.
 - **[Performance Analysis]({{< relref "performance.md" >}})**: Efficiency and scalability research.
 - **[Back to Introduction]({{< relref "../_index.md" >}})**
-
-> "A tool is only as good as the process that builds it. Automation is the final layer of defense." - *Completing the August 2025 roadmap.*
-
-> "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*

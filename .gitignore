@@ -1,15 +1,33 @@
+# AI and IDE specific
 .agents
 GEMINI.md
 .gemini/
-vendor/
-bin/
-lynx
 .cursor/
 .windsurf/
 .ai/
 ai_docs/
 skills-lock.json
 
+# Go build artifacts
+bin/
+lynx
+lynx-linux-amd64
+lynx-linux-arm64
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
 # Hugo build artifacts
 site/public/
 site/.hugo_build.lock
+
+# Local configuration and logs
+config.yaml
+baseline.json
+*.log
+.env
+
+# Go dependencies
+vendor/

@@ -9,7 +9,10 @@ import (
 )
 
 // Alert represents the structured payload for a security notification.
+// We include 'content' for Discord and 'text' for Slack compatibility.
 type Alert struct {
+	Content   string `json:"content"`   // For Discord
+	Text      string `json:"text"`      // For Slack
 	Agent     string `json:"agent"`
 	Timestamp string `json:"timestamp"`
 	Severity  string `json:"severity"`
@@ -18,11 +21,19 @@ type Alert struct {
 	Message   string `json:"message"`
 }
 
-// NewAlert creates a new Alert with the current timestamp.
+// NewAlert creates a new Alert with the current timestamp and formats the content for webhooks.
 func NewAlert(agent, severity, event, file, message string) Alert {
+	timestamp := time.Now().Format(time.RFC3339)
+	
+	// Create a readable summary for Discord/Slack
+	summary := fmt.Sprintf("🚨 **Lynx FIM Alert** 🚨\n**Agent:** %s\n**Severity:** %s\n**Event:** %s\n**File:** %s\n**Details:** %s\n*Timestamp: %s*", 
+		agent, severity, event, file, message, timestamp)
+
 	return Alert{
+		Content:   summary,
+		Text:      summary,
 		Agent:     agent,
-		Timestamp: time.Now().Format(time.RFC3339),
+		Timestamp: timestamp,
 		Severity:  severity,
 		Event:     event,
 		File:      file,

@@ -77,8 +77,9 @@ and dispatched asynchronously to the configured webhook.`,
 				logger.Warn("Anomaly detected", "details", anomaly)
 				fmt.Println(anomaly)
 
-				// 3. Dispatch the alert asynchronously
-				alertChan <- alert.NewAlert(cfg.AgentName, "CRITICAL", "FILE_CHANGE", "multiple", anomaly)
+				// 3. Dispatch the alert asynchronously with better details
+				// We'll pass the whole anomaly string as the message
+				alertChan <- alert.NewAlert(cfg.AgentName, "CRITICAL", "FILE_CHANGE", "Monitored Path", anomaly)
 
 			case sig := <-sigChan:
 				logger.Info("Shutting down Lynx FIM", "signal", sig.String())

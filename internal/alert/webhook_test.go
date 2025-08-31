@@ -23,6 +23,10 @@ func TestSendWebhook(t *testing.T) {
 			t.Errorf("Expected agent 'test-agent', got '%v'", payload["agent"])
 		}
 
+		if _, ok := payload["content"]; !ok {
+			t.Error("Expected 'content' field for Discord compatibility, but it was missing")
+		}
+
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
