@@ -65,6 +65,7 @@ Open the generated `config.yaml`. Here is a sample of how I configured mine:
 
 ```yaml
 agent_name: "prod-web-server-01"
+hmac_secret_env: "LYNX_HMAC_SECRET" # The NAME of the env var, not the secret!
 log_file: "/var/log/lynx.log"
 webhook_url: "https://discord.com/api/webhooks/..." # Your Discord Webhook
 

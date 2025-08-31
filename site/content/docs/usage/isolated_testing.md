@@ -34,7 +34,9 @@ echo "secret info" > watched_dirs/top_secret.txt
 ./lynx init
 
 # Update the config to watch our lab directory instead of system paths
+# Also ensures the secret key is read from the correct environment variable
 sed -i 's|/etc/ssh|./watched_dirs|g' config.yaml
+sed -i 's|hmac_secret_env: "LYNX_HMAC_SECRET"|hmac_secret_env: "LYNX_HMAC_SECRET"|g' config.yaml
 ```
 
 ### 4. Set Secret and Establish Baseline
