@@ -12,7 +12,7 @@ import (
 
 func TestMonitorAndDetect(t *testing.T) {
 	tmpDir := t.TempDir()
-
+	
 	// 1. Setup a baseline
 	testFile := filepath.Join(tmpDir, "monitored.txt")
 	content := []byte("original content")
@@ -21,7 +21,7 @@ func TestMonitorAndDetect(t *testing.T) {
 	}
 
 	cfg := &config.Config{
-		PathsToWatch:  []string{tmpDir},
+		PathsToWatch: []string{tmpDir},
 		HmacSecretEnv: "LYNX_HMAC_SECRET",
 	}
 	secret := "test-secret"
@@ -35,33 +35,61 @@ func TestMonitorAndDetect(t *testing.T) {
 
 	b, _ := fs.LoadBaseline(baselinePath, secret)
 
-	// 2. Start the monitor and detection loop (currently undefined)
-	// We'll use a channel to capture detected anomalies
-	anomalies := make(chan string, 10)
+	// 2. Start the monitor and detection loop
+	incidents := make(chan Incident, 10)
 	stop := make(chan struct{})
-
+	
 	go func() {
-		// Mocked or actual start logic
-		StartMonitoring(cfg, b, anomalies, stop)
+		StartMonitoring(cfg, b, incidents, stop)
 	}()
 
-	// Wait for monitor to settle
 	time.Sleep(200 * time.Millisecond)
 
-	// 3. Trigger a modification
+	// 3. Trigger a modification (should be CRITICAL)
 	if err := os.WriteFile(testFile, []byte("tampered content"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
-	// 4. Assert that the anomaly was detected
 	select {
-	case msg := <-anomalies:
-		if msg == "" {
-			t.Error("Detected empty anomaly message")
+	case inc := <-incidents:
+		if inc.Severity != "CRITICAL" {
+			t.Errorf("Expected CRITICAL severity for modification, got %s", inc.Severity)
+		}
+		if inc.EventType != "FILE_MODIFIED" {
+			t.Errorf("Expected FILE_MODIFIED event, got %s", inc.EventType)
 		}
 	case <-time.After(3 * time.Second):
-		t.Fatal("Timed out waiting for anomaly detection")
+		t.Fatal("Timed out waiting for modification detection")
 	}
 
+	// 4. Drain any duplicate events (common with fsnotify during rapid writes)
+	time.Sleep(100 * time.Millisecond)
+loop:
+	for {
+		select {
+		case <-incidents:
+		default:
+			break loop
+		}
+	}
+
+	// 5. Trigger a new file (should be WARNING)
+	newFile := filepath.Join(tmpDir, "new.txt")
+	if err := os.WriteFile(newFile, []byte("new content"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	select {
+	case inc := <-incidents:
+		if inc.Severity != "WARNING" {
+			t.Errorf("Expected WARNING severity for new file, got %s. Event: %s, Message: %s", inc.Severity, inc.EventType, inc.Message)
+		}
+		if inc.EventType != "FILE_CREATED" {
+			t.Errorf("Expected FILE_CREATED event, got %s", inc.EventType)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("Timed out waiting for new file detection")
+	}
+	
 	close(stop)
 }

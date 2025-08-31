@@ -137,6 +137,14 @@ I hit a major roadblock today: my webhook alerts were sending successfully from 
 
 **The Lesson:** Security tools need to speak the language of the platforms they integrate with. Always read the API documentation carefully!
 
+## Milestone 17: Beyond "Critical" - Dynamic Severities (August 31, 2025)
+
+As I refined the agent, I realized that labeling every single event as "CRITICAL" was creating too much noise. A new file being created in a watched directory is important (a **WARNING**), but a monitored configuration file being deleted or modified is an emergency (a **CRITICAL** event).
+
+**The Breakthrough:** I implemented a new `Incident` struct to replace the simple string messages I was using before. This allows the monitor to pass detailed metadata—like severity, event type, and file path—all the way up to the CLI and the webhooks. 
+
+**The Lesson:** I ran into a tricky bug where rapid file writes were generating duplicate events in my tests. I learned the importance of "draining" channels and adding small delays to ensure my TDD assertions were reliable and focused on the right data. 
+
 ### Technical Achievements (Final Build):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
@@ -151,7 +159,8 @@ I hit a major roadblock today: my webhook alerts were sending successfully from 
 - [x] Automated build system and cross-compilation with `Makefile`.
 - [x] Final codebase vetting and end-to-end proof-of-concept validation.
 - [x] GitHub Actions CI/CD pipeline for automated testing and releases.
-- [x] **Verified Discord and Slack compatibility for webhook alerts.**
+- [x] Verified Discord and Slack compatibility for webhook alerts.
+- [x] **Implemented dynamic severity levels (WARNING/CRITICAL) for more accurate reporting.**
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 

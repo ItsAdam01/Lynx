@@ -10,9 +10,9 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// StartMonitoring initializes the real-time event monitor and begins the
+// StartMonitoring initializes the real-time event monitor and begins the 
 // anomaly detection loop.
-func StartMonitoring(cfg *config.Config, b *fs.Baseline, anomalies chan<- string, stop <-chan struct{}) error {
+func StartMonitoring(cfg *config.Config, b *fs.Baseline, incidents chan<- Incident, stop <-chan struct{}) error {
 	m, err := monitor.NewMonitor(cfg.PathsToWatch)
 	if err != nil {
 		return fmt.Errorf("failed to start monitor: %w", err)
@@ -27,8 +27,7 @@ func StartMonitoring(cfg *config.Config, b *fs.Baseline, anomalies chan<- string
 	for {
 		select {
 		case event := <-events:
-			// 1. Identify the event type and handle accordingly
-			handleEvent(event, b, anomalies)
+			handleEvent(event, b, incidents)
 
 		case <-stop:
 			return nil
@@ -36,33 +35,48 @@ func StartMonitoring(cfg *config.Config, b *fs.Baseline, anomalies chan<- string
 	}
 }
 
-// handleEvent compares a file event with the baseline and reports anomalies.
-func handleEvent(event fsnotify.Event, b *fs.Baseline, anomalies chan<- string) {
-	// 1. Handle deletion
+// handleEvent compares a file event with the baseline and reports incidents.
+func handleEvent(event fsnotify.Event, b *fs.Baseline, incidents chan<- Incident) {
+	// 1. Handle deletion (CRITICAL)
 	if event.Op&fsnotify.Remove == fsnotify.Remove {
 		if _, exists := b.Hashes[event.Name]; exists {
-			anomalies <- fmt.Sprintf("CRITICAL: File deleted: %s", event.Name)
+			incidents <- Incident{
+				Severity:  "CRITICAL",
+				EventType: "FILE_DELETED",
+				FilePath:  event.Name,
+				Message:   fmt.Sprintf("Monitored file was deleted: %s", event.Name),
+			}
 		}
 		return
 	}
 
 	// 2. Handle creation or modification
 	if event.Op&fsnotify.Create == fsnotify.Create || event.Op&fsnotify.Write == fsnotify.Write {
-		// Calculate the new hash
 		newHash, err := crypto.HashFile(event.Name)
 		if err != nil {
-			// Might be a directory or permission issue, skip for now
 			return
 		}
 
 		oldHash, exists := b.Hashes[event.Name]
 		if !exists {
-			anomalies <- fmt.Sprintf("WARNING: New file created: %s", event.Name)
+			// New file (WARNING)
+			incidents <- Incident{
+				Severity:  "WARNING",
+				EventType: "FILE_CREATED",
+				FilePath:  event.Name,
+				Message:   fmt.Sprintf("New file created in monitored path: %s", event.Name),
+			}
 			return
 		}
 
 		if newHash != oldHash {
-			anomalies <- fmt.Sprintf("CRITICAL: File modified: %s", event.Name)
+			// Modification (CRITICAL)
+			incidents <- Incident{
+				Severity:  "CRITICAL",
+				EventType: "FILE_MODIFIED",
+				FilePath:  event.Name,
+				Message:   fmt.Sprintf("Monitored file was modified: %s", event.Name),
+			}
 		}
 	}
 }

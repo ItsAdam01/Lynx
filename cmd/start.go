@@ -56,7 +56,7 @@ and dispatched asynchronously to the configured webhook.`,
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-		anomalies := make(chan string, 100)
+		incidents := make(chan app.Incident, 100)
 		alertChan := make(chan alert.Alert, 100)
 
 		// 1. Start the asynchronous alert dispatcher
@@ -64,7 +64,7 @@ and dispatched asynchronously to the configured webhook.`,
 
 		// 2. Start the real-time monitoring system
 		go func() {
-			if err := app.StartMonitoring(cfg, baseline, anomalies, stop); err != nil {
+			if err := app.StartMonitoring(cfg, baseline, incidents, stop); err != nil {
 				logger.Error("Monitor failed", "error", err.Error())
 				os.Exit(1)
 			}
@@ -73,13 +73,17 @@ and dispatched asynchronously to the configured webhook.`,
 		// Main event loop
 		for {
 			select {
-			case anomaly := <-anomalies:
-				logger.Warn("Anomaly detected", "details", anomaly)
-				fmt.Println(anomaly)
+			case inc := <-incidents:
+				// Log and print based on severity
+				if inc.Severity == "CRITICAL" {
+					logger.Error("Critical anomaly detected", "details", inc.Message, "file", inc.FilePath)
+				} else {
+					logger.Warn("Anomaly detected", "details", inc.Message, "file", inc.FilePath)
+				}
+				fmt.Printf("[%s] %s: %s\n", inc.Severity, inc.EventType, inc.FilePath)
 
-				// 3. Dispatch the alert asynchronously with better details
-				// We'll pass the whole anomaly string as the message
-				alertChan <- alert.NewAlert(cfg.AgentName, "CRITICAL", "FILE_CHANGE", "Monitored Path", anomaly)
+				// 3. Dispatch the alert asynchronously with full incident details
+				alertChan <- alert.NewAlert(cfg.AgentName, inc.Severity, inc.EventType, inc.FilePath, inc.Message)
 
 			case sig := <-sigChan:
 				logger.Info("Shutting down Lynx FIM", "signal", sig.String())
