@@ -43,19 +43,19 @@ To ensure Lynx can scale to larger systems, I've analyzed the theoretical comple
 ### Phase 1: Initial Baselining
 This is the "Heavy Lifting" phase where the agent established the Source of Truth.
 
-*   **Time Complexity: $O(N \cdot S)$**
-    *   $N$ = Number of files.
-    *   $S$ = Average size of the files.
-    *   The agent must walk the directory tree ($O(N)$) and then read every byte of every file to calculate the SHA-256 hash ($O(S)$ per file).
-*   **Space Complexity: $O(N \cdot P)$**
-    *   $P$ = Average length of the file path string.
+*   **Time Complexity:** {{< katex >}}O(N \cdot S){{< /katex >}}
+    *   {{< katex >}}N{{< /katex >}} = Number of files.
+    *   {{< katex >}}S{{< /katex >}} = Average size of the files.
+    *   The agent must walk the directory tree ({{< katex >}}O(N){{< /katex >}}) and then read every byte of every file to calculate the SHA-256 hash ({{< katex >}}O(S){{< /katex >}} per file).
+*   **Space Complexity:** {{< katex >}}O(N \cdot P){{< /katex >}}
+    *   {{< katex >}}P{{< /katex >}} = Average length of the file path string.
     *   The agent stores a map of file paths to their corresponding hashes. This map grows linearly with the number of files being monitored.
 
 ### Phase 2: Real-time Monitoring
 This is the "Idle Defense" phase where the agent waits for events.
 
-*   **Time Complexity: $O(S_{changed})$**
-    *   Detection is $O(1)$ because the Linux kernel pushes events to the agent (no polling required).
-    *   When an event occurs, the agent only re-hashes the **specific file** that changed. This takes $O(S)$ where $S$ is the size of that modified file. Comparison with the in-memory baseline is a map lookup, which is $O(1)$ on average.
-*   **Space Complexity: $O(N \cdot P)$**
+*   **Time Complexity:** {{< katex >}}O(S_{changed}){{< /katex >}}
+    *   Detection is {{< katex >}}O(1){{< /katex >}} because the Linux kernel pushes events to the agent (no polling required).
+    *   When an event occurs, the agent only re-hashes the **specific file** that changed. This takes {{< katex >}}O(S){{< /katex >}} where {{< katex >}}S{{< /katex >}} is the size of that modified file. Comparison with the in-memory baseline is a map lookup, which is {{< katex >}}O(1){{< /katex >}} on average.
+*   **Space Complexity:** {{< katex >}}O(N \cdot P){{< /katex >}}
     *   The agent maintains the full baseline in memory to allow for instant comparisons when a file event is received.

@@ -19,3 +19,6 @@ theme = 'hugo-book'
 
   # (Optional) Set to true to show the search bar
   BookSearch = true
+
+  # Enable KaTeX for mathematical notation
+  BookKaTeX = true
