@@ -5,65 +5,66 @@ weight: 4
 
 # Experimental: Isolated Lab Setup
 
-If you want to test Lynx FIM without modifying your system directories or adding the binary to your global `$PATH`, you can set up an isolated "Lab" directory. This is exactly how I did my final testing for this project.
+This guide provides a step-by-step walkthrough for running a temporary, isolated Lynx FIM process. This is ideal for testing detection and alerting without modifying your system files or installing the binary globally.
 
 ## 🧪 The "Single Directory" Setup
 
-Follow these steps to create a self-contained testing environment.
+Follow these steps to create a self-contained testing environment in your `/tmp` directory.
 
-### 1. Create the Lab Directory
+### 1. Prepare the Lab
 ```bash
-mkdir lynx-lab && cd lynx-lab
-```
+# Create and enter a temporary workspace
+mkdir -p /tmp/lynx-lab && cd /tmp/lynx-lab
 
-### 2. Prepare the Binary
-Build Lynx from the root of the repository and copy it into your lab:
-```bash
-# From the project root
+# Build the latest binary from your project root
+# (Assuming you are in the project root for the make command)
 make build
-cp bin/lynx ./lynx-lab/
-cd lynx-lab
+cp bin/lynx /tmp/lynx-lab/
+cd /tmp/lynx-lab
 ```
 
-### 3. Create Dummy Files to Watch
+### 2. Create Dummy Data to Watch
 ```bash
-mkdir watched_files
-echo "initial content" > watched_files/test.txt
+mkdir watched_dirs
+echo "secret info" > watched_dirs/top_secret.txt
 ```
 
-### 4. Initialize and Configure Locally
-Run the init command inside the lab:
+### 3. Initialize and Configure Locally
 ```bash
 ./lynx init
+
+# Update the config to watch our lab directory instead of system paths
+sed -i 's|/etc/ssh|./watched_dirs|g' config.yaml
 ```
 
-Open `config.yaml` and change the `paths_to_watch` to point only to your lab directory:
-```yaml
-paths_to_watch:
-  - "./watched_files"
-```
-
-### 5. Run the Detection Cycle
-In your terminal, set the secret and create the baseline:
+### 4. Set Secret and Establish Baseline
 ```bash
-export LYNX_HMAC_SECRET="lab-testing-secret"
+export LYNX_HMAC_SECRET="lab-secret-123"
 ./lynx baseline -o lab_baseline.json
 ```
 
-Now, start the monitor:
+### 5. Start Monitoring
+Run this command to start the agent. Note that this will block the current terminal window as it listens for events.
 ```bash
 ./lynx start -b lab_baseline.json
 ```
 
-### 6. Test the Detection
-Open a **second terminal window**, navigate to the lab directory, and trigger an event:
+## 🔍 Verifying Detection
+
+While the process is running in **Terminal 1**, open a **second terminal window** and trigger a tampering event:
+
 ```bash
-echo "tampering with file" >> watched_files/test.txt
+cd /tmp/lynx-lab
+echo "tampered!" >> watched_dirs/top_secret.txt
 ```
 
-Go back to your first terminal. You should see the `CRITICAL: File modified` alert appear instantly in both your console and the `lynx.log` file.
+### Expected Output (Terminal 1)
+You should immediately see the alert in your first terminal:
+`CRITICAL: File modified: /tmp/lynx-lab/watched_dirs/top_secret.txt`
 
-## 💡 Why Test This Way?
-- **Safety:** You aren't touching sensitive system files like `/etc/passwd`.
-- **Speed:** It's much faster to iterate on configuration changes.
-- **Portability:** You can delete the `lynx-lab` folder when you're done, leaving your system completely clean.
+---
+
+## 🗺️ Navigation
+- **[Installation & Setup]({{< relref "installation.md" >}})**: Permanent installation and service setup.
+- **[Command Reference]({{< relref "commands.md" >}})**: Detailed syntax for all Lynx commands.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

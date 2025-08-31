@@ -37,4 +37,12 @@ These are the "quality" goals I'm aiming for as a developer:
 
 *   **Go Systems Programming:** Learn how to build long-running, concurrent services in Go.
 *   **Linux Security Fundamentals:** Understand how the Linux kernel notifies userspace about file changes (`inotify`).
-*   **Cryptography Basics:** Get hands-on experience with SHA-256 and HMAC to learn how data integrity is actually enforced in the real world.
+* **Cryptography Basics:** Get hands-on experience with SHA-256 and HMAC to learn how data integrity is actually enforced in the real world.
+
+---
+
+## 🗺️ Navigation
+- **[Technical Specifications]({{< relref "technical_specs.md" >}})**: How these requirements are built.
+- **[Implementation Plan]({{< relref "implementation_plan.md" >}})**: Timeline for the build.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**
+

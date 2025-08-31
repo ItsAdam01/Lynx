@@ -24,3 +24,10 @@ Detecting an event is only useful if someone is notified.
 
 ## 🛠️ Manual Audits
 Sometimes you don't want a long-running process. Lynx includes a `verify` command for one-off manual comparisons against your stored baseline.
+
+---
+
+## 🗺️ Navigation
+- **[Installation & Setup]({{< relref "installation.md" >}})**: How to get started.
+- **[Command Reference]({{< relref "commands.md" >}})**: Detailed syntax.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

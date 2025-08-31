@@ -73,3 +73,10 @@ files_to_watch:
 
 - **Sensitive Data:** The `LYNX_HMAC_SECRET` must be provided as an environment variable. The agent will panic and exit if it's not present.
 - **Privilege:** The agent will need to run with `sudo` (root) permissions to read sensitive system files and create the `inotify` watches.
+
+---
+
+## 🗺️ Navigation
+- **[Requirements]({{< relref "requirements.md" >}})**: Theoretical foundation for the HIDS.
+- **[Implementation Plan]({{< relref "implementation_plan.md" >}})**: Project roadmap.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

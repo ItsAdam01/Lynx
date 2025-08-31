@@ -44,3 +44,10 @@ The final phase is about making the system robust and useful in a real-world sce
 -   **Centralized Management:** Move away from local JSON logging to a central server.
 -   **Automated Remediation:** If a critical file is modified, automatically restore it from a secure backup.
 -   **Kernel-Level Filtering:** Explore more advanced ways to filter events at the kernel level for even better performance.
+
+---
+
+## 🗺️ Navigation
+- **[Implementation Story]({{< relref "implementation_story.md" >}})**: Milestone-by-milestone development log.
+- **[Technical Specifications]({{< relref "technical_specs.md" >}})**: Deep dive into the architecture.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

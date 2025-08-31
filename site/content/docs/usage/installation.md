@@ -135,3 +135,10 @@ sudo systemctl status lynx
 - **/proc/ or /sys/**: Virtual kernel file systems.
 - **/var/log/**: High-frequency log writes.
 - **/tmp/**: High-noise temporary storage.
+
+---
+
+## 🗺️ Navigation
+- **[Command Reference]({{< relref "commands.md" >}})**: How to operate the agent.
+- **[General Features]({{< relref "features.md" >}})**: What Lynx can do for you.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

@@ -78,3 +78,10 @@ lynx verify [flags]
 
 ### What it does:
 Use this for manual sweeps. It performs a full scan of the file system and compares it against the baseline immediately, printing a summary of discrepancies to the terminal. Unlike `start`, this command exits as soon as the audit is complete.
+
+---
+
+## 🗺️ Navigation
+- **[Installation & Setup]({{< relref "installation.md" >}})**: How to get the binary.
+- **[Isolated Lab Testing]({{< relref "isolated_testing.md" >}})**: Safe testing tutorial.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**

@@ -141,6 +141,13 @@ Today I performed the final end-to-end manual test of the Lynx FIM agent. I've v
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 
+---
+
+## 🗺️ Navigation
+- **[Proof of Concept]({{< relref "demonstration.md" >}})**: Seeing Lynx in action.
+- **[Performance Analysis]({{< relref "performance.md" >}})**: Efficiency and scalability research.
+- **[Back to Introduction]({{< relref "../_index.md" >}})**
+
 > "A tool is only as good as the process that builds it. Automation is the final layer of defense." - *Completing the August 2025 roadmap.*
 
 > "A security tool that only looks back is a historian. A security tool that looks at the present is a defender." - *Closing the loop on real-time defense.*
