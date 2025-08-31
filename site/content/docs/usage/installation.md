@@ -47,8 +47,17 @@ lynx init
 ### Step 2: The HMAC Secret
 Lynx requires a secret key to protect the integrity of its baseline. You must set this as an environment variable. I learned that keeping secrets out of config files is a major security best practice.
 
+#### Generating a Secure Secret
+To generate a cryptographically secure random string for your secret, I recommend using OpenSSL:
+
 ```bash
-export LYNX_HMAC_SECRET="use-a-very-long-random-string-here"
+# Generate a random 32-byte base64 encoded string
+openssl rand -base64 32
+```
+
+Once you have your secret, export it to your environment:
+```bash
+export LYNX_HMAC_SECRET="your-generated-output-here"
 ```
 
 ### Step 3: Configure `config.yaml`
