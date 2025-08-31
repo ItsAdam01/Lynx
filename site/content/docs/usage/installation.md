@@ -5,7 +5,7 @@ weight: 1
 
 # Installation and Setup Guide
 
-This guide covers everything you need to get Lynx FIM running on your system, from compiling the source code to choosing which directories to monitor.
+This guide covers everything you need to get Lynx FIM running on your system, from compiling the source code to ensuring it stays running after a reboot.
 
 ## 1. Supported Platforms
 
@@ -56,7 +56,7 @@ Open the generated `config.yaml`. Here is a sample of how I configured mine:
 
 ```yaml
 agent_name: "prod-web-server-01"
-log_file: "./lynx.log"
+log_file: "/var/log/lynx.log"
 webhook_url: "https://discord.com/api/webhooks/..." # Your Discord Webhook
 
 # Directories to monitor recursively
@@ -72,16 +72,66 @@ files_to_watch:
   - "/etc/hosts"
 ```
 
-## 4. Directory Recommendations
+## 4. Running the Agent
 
-Choosing what to watch is a balance between security and performance. Here is what I discovered during my research:
+### Permissions
+Because Lynx needs to read sensitive system files (like `/etc/shadow`) and hook into kernel events, it **must be run with root privileges**.
+
+```bash
+sudo LYNX_HMAC_SECRET="your-secret" ./bin/lynx start
+```
+
+## 5. Persistence (Running as a Service)
+
+To ensure Lynx FIM starts automatically when the server boots and restarts if it fails, you should use `systemd`. This is how professional HIDS agents are deployed.
+
+### Step 1: Create the Service File
+Create a file at `/etc/systemd/system/lynx.service`:
+
+```ini
+[Unit]
+Description=Lynx File Integrity Monitor
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/lynx
+# Pass the secret via environment variable
+Environment=LYNX_HMAC_SECRET=your-super-long-secret-key
+ExecStart=/usr/local/bin/lynx start --config /opt/lynx/config.yaml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Step 2: Enable and Start
+Run the following commands to activate the service:
+
+```bash
+# Reload systemd to recognize the new service
+sudo systemctl daemon-reload
+
+# Enable the service to start on boot
+sudo systemctl enable lynx
+
+# Start the service immediately
+sudo systemctl start lynx
+
+# Check the status
+sudo systemctl status lynx
+```
+
+## 6. Directory Recommendations
 
 ### ✅ Recommended to Watch
-- **/etc/**: Contains almost all system configuration files.
-- **/usr/bin/ or /usr/local/bin/**: Where system executables live. Watching these helps detect "binary replacement" attacks.
-- **/root/.ssh/**: To monitor for unauthorized SSH keys being added.
+- **/etc/**: System configuration files.
+- **/usr/bin/ or /usr/local/bin/**: System executables.
+- **/root/.ssh/**: Unauthorized SSH keys.
 
 ### ❌ Not Recommended to Watch
-- **/proc/ or /sys/**: These are virtual file systems managed by the kernel; they change constantly and will flood you with alerts.
-- **/var/log/**: Logs change every second. Monitoring them with a FIM will cause a loop of alerts.
-- **/tmp/**: High-noise directory used by many applications for temporary storage.
+- **/proc/ or /sys/**: Virtual kernel file systems.
+- **/var/log/**: High-frequency log writes.
+- **/tmp/**: High-noise temporary storage.
