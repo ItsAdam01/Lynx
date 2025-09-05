@@ -15,7 +15,7 @@ func VerifyIntegrity(cfg *config.Config, b *fs.Baseline) ([]string, error) {
 
 	// 1. Scan targets to find all files
 	targets := append(cfg.PathsToWatch, cfg.FilesToWatch...)
-	files, err := fs.ScanTargets(targets)
+	files, err := fs.ScanTargets(targets, cfg.IgnoredPatterns)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan targets: %w", err)
 	}

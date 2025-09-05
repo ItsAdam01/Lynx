@@ -5,25 +5,36 @@ import (
 	"path/filepath"
 )
 
-// ScanTargets takes a list of paths (directories or files) and returns a slice
-// of all unique absolute file paths found.
-func ScanTargets(targets []string) ([]string, error) {
+// ScanTargets takes a list of paths and a list of ignore patterns, returning 
+// all unique absolute file paths that do not match the ignored patterns.
+func ScanTargets(targets []string, ignoredPatterns []string) ([]string, error) {
 	fileMap := make(map[string]struct{})
 
 	for _, target := range targets {
 		absTarget, err := filepath.Abs(target)
 		if err != nil {
-			continue // Skip paths that can't be resolved
+			continue
 		}
 
 		err = filepath.Walk(absTarget, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
-			// We only care about files, not directories
-			if !info.IsDir() {
-				fileMap[path] = struct{}{}
+			
+			if info.IsDir() {
+				return nil
 			}
+
+			// Check if the file matches any ignore pattern
+			fileName := filepath.Base(path)
+			for _, pattern := range ignoredPatterns {
+				matched, err := filepath.Match(pattern, fileName)
+				if err == nil && matched {
+					return nil // Skip this file
+				}
+			}
+
+			fileMap[path] = struct{}{}
 			return nil
 		})
 

@@ -38,7 +38,7 @@ func TestScanTargets(t *testing.T) {
 	}
 
 	targets := []string{tmpDir}
-	files, err := ScanTargets(targets)
+	files, err := ScanTargets(targets, []string{})
 	if err != nil {
 		t.Fatalf("ScanTargets failed: %v", err)
 	}

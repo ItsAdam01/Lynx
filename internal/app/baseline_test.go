@@ -21,8 +21,9 @@ func TestCreateBaseline(t *testing.T) {
 
 	// 2. Setup a dummy config
 	cfg := &config.Config{
-		PathsToWatch:  []string{tmpDir},
-		HmacSecretEnv: "LYNX_HMAC_SECRET",
+		PathsToWatch:    []string{tmpDir},
+		HmacSecretEnv:   "LYNX_HMAC_SECRET",
+		IgnoredPatterns: []string{"config.yaml"},
 	}
 
 	secret := "test-secret"
@@ -30,9 +31,11 @@ func TestCreateBaseline(t *testing.T) {
 	defer os.Unsetenv("LYNX_HMAC_SECRET")
 
 	baselinePath := filepath.Join(tmpDir, "baseline.json")
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	os.WriteFile(configPath, []byte("dummy config"), 0644)
 
-	// 3. Run the coordination logic (this should fail initially as undefined)
-	err := CreateBaseline(cfg, baselinePath)
+	// 3. Run the coordination logic
+	err := CreateBaseline(cfg, configPath, baselinePath)
 	if err != nil {
 		t.Fatalf("CreateBaseline failed: %v", err)
 	}
@@ -61,9 +64,11 @@ func BenchmarkCreateBaseline_100Files(b *testing.B) {
 	}
 	os.Setenv("LYNX_HMAC_SECRET", "bench-secret")
 	baselinePath := filepath.Join(tmpDir, "baseline.json")
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	os.WriteFile(configPath, []byte("bench config"), 0644)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		CreateBaseline(cfg, baselinePath)
+		CreateBaseline(cfg, configPath, baselinePath)
 	}
 }

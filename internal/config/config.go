@@ -13,9 +13,11 @@ type Config struct {
 	HmacSecretEnv string   `mapstructure:"hmac_secret_env"`
 	LogFile       string   `mapstructure:"log_file"`
 	WebhookURL    string   `mapstructure:"webhook_url"`
-	PathsToWatch  []string `mapstructure:"paths_to_watch"`
-	FilesToWatch  []string `mapstructure:"files_to_watch"`
-}
+		PathsToWatch   []string `mapstructure:"paths_to_watch"`
+		FilesToWatch   []string `mapstructure:"files_to_watch"`
+		IgnoredPatterns []string `mapstructure:"ignored_patterns"`
+	}
+	
 
 // LoadConfig reads the configuration from config.yaml or environment variables.
 func LoadConfig(configPath string) (*Config, error) {
@@ -61,6 +63,12 @@ paths_to_watch:
 files_to_watch:
   - "/etc/passwd"
   - "/etc/hosts"
+
+# Patterns to ignore (supports shell globbing)
+ignored_patterns:
+  - "*.tmp"
+  - "*.swp"
+  - ".DS_Store"
 `
 
 	return os.WriteFile(path, []byte(defaultYAML), 0644)

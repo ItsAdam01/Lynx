@@ -13,6 +13,7 @@ import (
 type BaselineMetadata struct {
 	GeneratedAt time.Time `json:"generated_at"`
 	TotalFiles  int       `json:"total_files"`
+	ConfigHash  string    `json:"config_hash"` // Protects the ignore list and paths
 }
 
 // Baseline represents the full state of the monitored files.
@@ -22,12 +23,13 @@ type Baseline struct {
 	Signature string            `json:"signature"`
 }
 
-// NewBaseline initializes a Baseline with the given hashes.
-func NewBaseline(hashes map[string]string) *Baseline {
+// NewBaseline initializes a Baseline with the given hashes and configuration fingerprint.
+func NewBaseline(hashes map[string]string, configHash string) *Baseline {
 	return &Baseline{
 		Metadata: BaselineMetadata{
 			GeneratedAt: time.Now(),
 			TotalFiles:  len(hashes),
+			ConfigHash:  configHash,
 		},
 		Hashes: hashes,
 	}

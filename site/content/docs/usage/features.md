@@ -22,6 +22,14 @@ Detecting an event is only useful if someone is notified.
 - **Structured JSON Logs:** All security events are logged in a machine-readable format, making it easy to integrate with SIEM platforms.
 - **Asynchronous Webhooks:** Alerts are dispatched in the background. This ensures that a slow network connection never slows down the monitoring loop.
 
+### Severity Levels and Criteria
+During my research, I realized that not all file changes are equally dangerous. I've implemented two levels of severity to help reduce alert noise:
+
+| Severity | Criteria | Reasoning |
+|----------|----------|-----------|
+| **CRITICAL** | A file in the baseline was **modified** or **deleted**. | This is a direct compromise of the "Source of Truth." It means a file you specifically chose to protect has been tampered with. |
+| **WARNING** | A **new file** was created in a watched directory. | This could be a standard administrative task (like adding a new user) or a "drop" of a malicious script. It requires investigation but isn't necessarily a breach of existing files. |
+
 ## 🛠️ Manual Audits
 Sometimes you don't want a long-running process. Lynx includes a `verify` command for one-off manual comparisons against your stored baseline.
 

@@ -9,34 +9,38 @@ import (
 )
 
 // CreateBaseline coordinates the scanning, hashing, and saving of a new file integrity baseline.
-func CreateBaseline(cfg *config.Config, baselinePath string) error {
+func CreateBaseline(cfg *config.Config, configPath, baselinePath string) error {
 	// 1. Get the HMAC secret from environment
 	secret, err := cfg.GetHmacSecret()
 	if err != nil {
 		return err
 	}
 
-	// 2. Scan targets to find all files
+	// 2. Hash the configuration file itself to protect the ignore list and watch paths
+	cfgHash, err := crypto.HashFile(configPath)
+	if err != nil {
+		return fmt.Errorf("failed to hash config file: %w", err)
+	}
+
+	// 3. Scan targets to find all files, applying ignore patterns
 	targets := append(cfg.PathsToWatch, cfg.FilesToWatch...)
-	files, err := fs.ScanTargets(targets)
+	files, err := fs.ScanTargets(targets, cfg.IgnoredPatterns)
 	if err != nil {
 		return fmt.Errorf("failed to scan targets: %w", err)
 	}
 
-	// 3. Hash each file
+	// 4. Hash each file
 	hashes := make(map[string]string)
 	for _, path := range files {
 		hash, err := crypto.HashFile(path)
 		if err != nil {
-			// In a real-world scenario, we might want to log this and continue
-			// but for now, we'll treat it as a hard failure for safety.
 			return fmt.Errorf("failed to hash file %s: %w", path, err)
 		}
 		hashes[path] = hash
 	}
 
-	// 4. Create and save the baseline
-	b := fs.NewBaseline(hashes)
+	// 5. Create and save the baseline with the config fingerprint
+	b := fs.NewBaseline(hashes, cfgHash)
 	if err := b.Save(baselinePath, secret); err != nil {
 		return fmt.Errorf("failed to save baseline: %w", err)
 	}

@@ -28,7 +28,10 @@ func TestVerifyIntegrity(t *testing.T) {
 	defer os.Unsetenv("LYNX_HMAC_SECRET")
 
 	baselinePath := filepath.Join(tmpDir, "baseline.json")
-	if err := CreateBaseline(cfg, baselinePath); err != nil {
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	os.WriteFile(configPath, []byte("dummy config"), 0644)
+
+	if err := CreateBaseline(cfg, configPath, baselinePath); err != nil {
 		t.Fatal(err)
 	}
 

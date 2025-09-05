@@ -9,6 +9,7 @@ import (
 	"github.com/ItsAdam01/Lynx/internal/alert"
 	"github.com/ItsAdam01/Lynx/internal/app"
 	"github.com/ItsAdam01/Lynx/internal/config"
+	"github.com/ItsAdam01/Lynx/internal/crypto"
 	"github.com/ItsAdam01/Lynx/internal/fs"
 	"github.com/ItsAdam01/Lynx/internal/logger"
 	"github.com/spf13/cobra"
@@ -46,6 +47,14 @@ and dispatched asynchronously to the configured webhook.`,
 		baseline, err := fs.LoadBaseline(startBaselineInput, secret)
 		if err != nil {
 			logger.Error("Failed to load baseline. Integrity compromised or file missing.", "error", err.Error())
+			os.Exit(1)
+		}
+
+		// Verify that the config file itself hasn't been tampered with
+		currentCfgHash, _ := crypto.HashFile(cfgFile)
+		if currentCfgHash != baseline.Metadata.ConfigHash {
+			logger.Error("Configuration mismatch! config.yaml has been modified since the baseline was created.", "file", cfgFile)
+			fmt.Printf("Error: Configuration file mismatch. Please re-run 'lynx baseline' if this change was intentional.\n")
 			os.Exit(1)
 		}
 

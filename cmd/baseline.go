@@ -24,7 +24,7 @@ and saves a signed baseline.json for future integrity verification.`,
 			os.Exit(1)
 		}
 
-		if err := app.CreateBaseline(cfg, baselineOutput); err != nil {
+		if err := app.CreateBaseline(cfg, cfgFile, baselineOutput); err != nil {
 			fmt.Printf("Error creating baseline: %v\n", err)
 			os.Exit(1)
 		}

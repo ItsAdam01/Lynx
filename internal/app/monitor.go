@@ -37,14 +37,15 @@ func StartMonitoring(cfg *config.Config, b *fs.Baseline, incidents chan<- Incide
 
 // handleEvent compares a file event with the baseline and reports incidents.
 func handleEvent(event fsnotify.Event, b *fs.Baseline, incidents chan<- Incident) {
-	// 1. Handle deletion (CRITICAL)
-	if event.Op&fsnotify.Remove == fsnotify.Remove {
+	// 1. Handle deletion or rename (CRITICAL)
+	// Note: A rename often sends a 'Rename' event for the old path.
+	if event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Rename == fsnotify.Rename {
 		if _, exists := b.Hashes[event.Name]; exists {
 			incidents <- Incident{
 				Severity:  "CRITICAL",
 				EventType: "FILE_DELETED",
 				FilePath:  event.Name,
-				Message:   fmt.Sprintf("Monitored file was deleted: %s", event.Name),
+				Message:   fmt.Sprintf("Monitored file was deleted or renamed: %s", event.Name),
 			}
 		}
 		return

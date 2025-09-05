@@ -113,6 +113,8 @@ As I wrap up this project, I've moved from writing code to thinking about how ot
 
 **The Breakthrough:** With one command, I can now run my entire test suite and build binaries for both `amd64` and `arm64` Linux servers. This is a major step toward making the agent "production-ready." It feels like I've built a real tool, not just a learning project.
 
+**The Lesson:** I learned that automation is just as important as the code itself. By building the testing into my `Makefile`, I've ensured that I never accidentally ship a binary that hasn't passed all my integrity checks. 
+
 ## Milestone 14: Final Audit and Proof of Concept (August 15, 2025)
 
 Today I performed the final end-to-end manual test of the Lynx FIM agent. I've vetted the codebase with `go fmt` and `go vet`, and then I ran the agent through its paces in a simulated security scenario.
@@ -145,7 +147,25 @@ As I refined the agent, I realized that labeling every single event as "CRITICAL
 
 **The Lesson:** I ran into a tricky bug where rapid file writes were generating duplicate events in my tests. I learned the importance of "draining" channels and adding small delays to ensure my TDD assertions were reliable and focused on the right data. 
 
-### Technical Achievements (Final Build):
+## Milestone 18: Quality over Speed - Timeline Extension (September 1, 2025)
+
+I've decided to extend my learning roadmap into September. Originally, I thought two months would be enough, but as I got deeper into the security logic, I realized there was more to document and refine. I want to make sure I don't "saturate" the project with too many rushed changes.
+
+**The Focus:** This month is about clarifying the "Security Logic" of the tool. I've formally documented the criteria for my **CRITICAL** and **WARNING** severity levels. This helps anyone using the tool understand exactly why they are being alerted. 
+
+**The Lesson:** Real projects take time. Rushing the final stages of a security tool is how vulnerabilities are missed. By extending the timeline, I'm giving myself the space to be meticulous with my documentation and testing.
+
+## Milestone 19: Protecting the Source of Truth - Ignores and Config Integrity (September 5, 2025)
+
+As I moved into September, I focused on two critical features: a `.gitignore`-style mechanism for monitoring and ensuring the integrity of the configuration itself.
+
+**The Breakthrough:** I implemented `ignored_patterns` in the configuration. This allows users to exclude noisy files (like `.tmp` or `.swp`) while still watching the rest of a directory. But more importantly, I realized that the configuration itself is a target. If an attacker can modify the ignore list, they can hide their tracks.
+
+**The Solution:** I now hash the `config.yaml` file and store that hash in the baseline metadata. Every time the agent starts, it re-hashes the config and compares it to the "locked" version in the baseline. If they don't match, the agent refuses to start. It's a "Source of Truth" for the "Source of Truth."
+
+**Rename Handling:** I also refined how renames are reported. Instead of a generic "File modified," the agent now specifically detects `Rename` events and reports them as a deletion of the original file, which is more intuitive for a security analyst.
+
+### Technical Achievements (Project Complete):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
@@ -160,7 +180,8 @@ As I refined the agent, I realized that labeling every single event as "CRITICAL
 - [x] Final codebase vetting and end-to-end proof-of-concept validation.
 - [x] GitHub Actions CI/CD pipeline for automated testing and releases.
 - [x] Verified Discord and Slack compatibility for webhook alerts.
-- [x] **Implemented dynamic severity levels (WARNING/CRITICAL) for more accurate reporting.**
+- [x] Implemented dynamic severity levels (WARNING/CRITICAL).
+- [x] **Added ignore pattern support and configuration file integrity verification.**
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 

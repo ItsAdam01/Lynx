@@ -16,7 +16,7 @@ func TestBaselineSaveAndLoad(t *testing.T) {
 		"/etc/hosts":  "hash2",
 	}
 
-	b := NewBaseline(hashes)
+	b := NewBaseline(hashes, "dummy-config-hash")
 	if err := b.Save(baselinePath, secret); err != nil {
 		t.Fatalf("Failed to save baseline: %v", err)
 	}

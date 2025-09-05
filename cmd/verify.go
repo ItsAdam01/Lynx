@@ -6,6 +6,7 @@ import (
 
 	"github.com/ItsAdam01/Lynx/internal/app"
 	"github.com/ItsAdam01/Lynx/internal/config"
+	"github.com/ItsAdam01/Lynx/internal/crypto"
 	"github.com/ItsAdam01/Lynx/internal/fs"
 	"github.com/spf13/cobra"
 )
@@ -35,6 +36,13 @@ comparison of the entire file system against the stored hashes.`,
 		baseline, err := fs.LoadBaseline(verifyBaselineInput, secret)
 		if err != nil {
 			fmt.Printf("Error: Failed to load/verify baseline: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Verify that the config file itself hasn't been tampered with
+		currentCfgHash, _ := crypto.HashFile(cfgFile)
+		if currentCfgHash != baseline.Metadata.ConfigHash {
+			fmt.Printf("Error: Configuration file mismatch. The config.yaml has been modified since this baseline was created.\n")
 			os.Exit(1)
 		}
 
