@@ -3,35 +3,47 @@ title: "General Features"
 weight: 2
 ---
 
-# Lynx FIM Features
+# Lynx FIM: Complete Feature Guide
 
-Lynx is designed to be a lightweight, focused tool for host-based intrusion detection. Here is what I've implemented to ensure system integrity.
+Lynx FIM is a focused, high-performance host-based intrusion detection agent. This page provides a comprehensive breakdown of every feature I've implemented during this project.
 
-## 🛡️ Cryptographic Integrity
-Lynx establishes a "Source of Truth" by creating a baseline of your system files.
-- **SHA-256 Hashing:** Every file is fingerprinted with a unique cryptographic hash.
-- **HMAC Protection:** The baseline file itself is signed with an HMAC secret. If an attacker modifies the baseline to hide their tracks, Lynx will detect the signature mismatch and refuse to start.
+## 1. Cryptographic Integrity (The Baseline)
+At the heart of Lynx is the "Source of Truth"—a cryptographic record of every file you choose to protect.
 
-## 📡 Real-time Monitoring
-Instead of constantly scanning the disk, which is slow, Lynx uses kernel-level hooks.
-- **Kernel Events:** Lynx listens for `Create`, `Write`, `Delete`, and `Rename` events via the Linux `inotify` system.
-- **Recursive Watching:** If you create a new directory inside a watched path, Lynx automatically adds it to the monitoring queue in real-time.
+-   **SHA-256 Hashing:** Every monitored file is fingerprinted using the industry-standard SHA-256 algorithm. Even a single bit change in a file will result in a completely different hash.
+-   **HMAC Protection:** The `baseline.json` file is signed with a Hash-based Message Authentication Code (HMAC). This ensures that even if an attacker modifies the baseline file, the agent will detect the tampering and refuse to trust it.
+-   **Configuration Locking:** Lynx hashes your `config.yaml` and stores that hash in the baseline. This prevents unauthorized changes to your watch paths or ignore lists after the baseline has been established.
 
-## 🚨 Professional Alerting
-Detecting an event is only useful if someone is notified.
-- **Structured JSON Logs:** All security events are logged in a machine-readable format, making it easy to integrate with SIEM platforms.
-- **Asynchronous Webhooks:** Alerts are dispatched in the background. This ensures that a slow network connection never slows down the monitoring loop.
+## 2. Real-time Monitoring
+Lynx doesn't just scan files; it actively defends your system using kernel-level event hooks.
 
-### Severity Levels and Criteria
-During my research, I realized that not all file changes are equally dangerous. I've implemented two levels of severity to help reduce alert noise:
+-   **fsnotify Integration:** Leverages the Linux `inotify` system to receive instant notifications from the kernel whenever a file is touched.
+-   **Event Detection:** Specifically monitors for:
+    -   **Creation:** New files appearing in watched directories.
+    -   **Modification:** Changes to the content of existing monitored files.
+    -   **Deletion:** Monitored files being removed.
+    -   **Renaming:** Automatically detected and reported as a deletion of the original path.
+-   **Recursive Watching:** When you watch a directory, Lynx automatically monitors every subdirectory within it. If you create a new folder, Lynx hooks into it immediately without requiring a restart.
 
-| Severity | Criteria | Reasoning |
-|----------|----------|-----------|
-| **CRITICAL** | A file in the baseline was **modified** or **deleted**. | This is a direct compromise of the "Source of Truth." It means a file you specifically chose to protect has been tampered with. |
-| **WARNING** | A **new file** was created in a watched directory. | This could be a standard administrative task (like adding a new user) or a "drop" of a malicious script. It requires investigation but isn't necessarily a breach of existing files. |
+## 3. Advanced Filtering & Noise Reduction
+To be useful in production, a FIM must be quiet. I've implemented a robust "ignore" mechanism to reduce alert fatigue.
 
-## 🛠️ Manual Audits
-Sometimes you don't want a long-running process. Lynx includes a `verify` command for one-off manual comparisons against your stored baseline.
+-   **Ignore Patterns:** Support for `.gitignore`-style patterns in your configuration. You can exclude noisy files (like `*.log`, `*.tmp`, or `.DS_Store`) using standard shell globbing.
+-   **Global & Local Paths:** Ignore rules apply recursively to all monitored directories.
+
+## 4. Professional Alerting Pipeline
+Detecting a breach is only half the battle; the other half is making sure the right people know about it instantly.
+
+-   **Structured JSON Logging:** Every security event is logged as a machine-readable JSON object. This is perfect for integration with SIEM platforms like Splunk, ELK, or Datadog.
+-   **Asynchronous Webhooks:** Alerts are dispatched to Discord or Slack in the background using a non-blocking queue. This ensures that network latency never slows down the core monitoring loop.
+-   **Multi-Platform Support:** Webhook payloads are pre-formatted for perfect rendering in both Discord and Slack, including emojis and bold summaries for high visibility.
+
+## 5. Flexible Operation Modes
+Lynx is designed to be both a persistent defender and a manual audit tool.
+
+-   **Persistent Agent (`start`):** A long-running background process with graceful shutdown handling.
+-   **Manual Audit (`verify`):** A one-off command that performs a comprehensive "clean sweep" comparison of your entire system against the baseline and prints a detailed report.
+-   **Easy Scaffolding (`init`):** Instantly generate a boilerplate configuration to get started in seconds.
 
 ---
 
