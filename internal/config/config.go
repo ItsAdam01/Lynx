@@ -69,6 +69,9 @@ ignored_patterns:
   - "*.tmp"
   - "*.swp"
   - ".DS_Store"
+  - "*~"
+  - "#*#"
+  - "4913"
 `
 
 	return os.WriteFile(path, []byte(defaultYAML), 0644)

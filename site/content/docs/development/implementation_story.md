@@ -99,6 +99,8 @@ As I tested the agent, I noticed a problem: if the webhook server is slow, my wh
 
 **The Breakthrough:** I implemented an asynchronous `AlertDispatcher` today using Go's channels and goroutines. Now, when the agent detects an anomaly, it simply "drops" the alert into a channel and gets back to monitoring immediately. A separate background process picks up the alert and handles the network delivery.
 
+**The Lesson:** This was my first real experience with Go's concurrency patterns in a production-like scenario. Learning how to use a `select` statement to handle both outgoing alerts and a "stop" signal was a major milestone for me. It makes the agent feel much more professional and robust.
+
 ## Milestone 12: The Final Connection (August 8, 2025)
 
 Today I officially "closed the loop" by integrating the asynchronous alert dispatcher into the `lynx start` command. 
@@ -137,8 +139,6 @@ I hit a major roadblock today: my webhook alerts were sending successfully from 
 
 **The Breakthrough:** I updated my `Alert` struct to include both `content` and `text` fields. I also updated the `NewAlert` function to automatically format a nice, readable summary with emojis and bold text. Now, the alerts look professional and are instantly visible in Discord.
 
-**The Lesson:** Security tools need to speak the language of the platforms they integrate with. Always read the API documentation carefully!
-
 ## Milestone 17: Beyond "Critical" - Dynamic Severities (August 31, 2025)
 
 As I refined the agent, I realized that labeling every single event as "CRITICAL" was creating too much noise. A new file being created in a watched directory is important (a **WARNING**), but a monitored configuration file being deleted or modified is an emergency (a **CRITICAL** event).
@@ -153,8 +153,6 @@ I've decided to extend my learning roadmap into September. Originally, I thought
 
 **The Focus:** This month is about clarifying the "Security Logic" of the tool. I've formally documented the criteria for my **CRITICAL** and **WARNING** severity levels. This helps anyone using the tool understand exactly why they are being alerted. 
 
-**The Lesson:** Real projects take time. Rushing the final stages of a security tool is how vulnerabilities are missed. By extending the timeline, I'm giving myself the space to be meticulous with my documentation and testing.
-
 ## Milestone 19: Protecting the Source of Truth - Ignores and Config Integrity (September 5, 2025)
 
 As I moved into September, I focused on two critical features: a `.gitignore`-style mechanism for monitoring and ensuring the integrity of the configuration itself.
@@ -163,7 +161,15 @@ As I moved into September, I focused on two critical features: a `.gitignore`-st
 
 **The Solution:** I now hash the `config.yaml` file and store that hash in the baseline metadata. Every time the agent starts, it re-hashes the config and compares it to the "locked" version in the baseline. If they don't match, the agent refuses to start. It's a "Source of Truth" for the "Source of Truth."
 
-**Rename Handling:** I also refined how renames are reported. Instead of a generic "File modified," the agent now specifically detects `Rename` events and reports them as a deletion of the original file, which is more intuitive for a security analyst.
+## Milestone 20: Taming the Noise - Event Debouncing (September 15, 2025)
+
+As I tested the agent with real-world editors like Vim and Nano, I noticed a major issue: a single file save was triggering up to four different alerts.
+
+**The Research:** I learned that editors don't just "write" to a file. They perform an "atomic save"—creating temporary files, deleting the original, and then renaming the new one into place. `fsnotify` sees every single one of these steps as a separate event. 
+
+**The Breakthrough:** I implemented an **Event Debouncer**. When a file event occurs, the agent now waits for a short "cooldown" period (500ms). If more events arrive for that same file during the window, the timer resets. Once the activity settles, the agent only processes the *final* state of the file. This reduced my alert spam from 4-5 reports down to just 1 accurate `FILE_MODIFIED` incident.
+
+**The Lesson:** Systems programming requires handling the "messiness" of the OS. What looks like one action to a human is often a dozen rapid-fire events to the kernel.
 
 ### Technical Achievements (Project Complete):
 - [x] Verified SHA-256 hashing for files.
@@ -181,7 +187,8 @@ As I moved into September, I focused on two critical features: a `.gitignore`-st
 - [x] GitHub Actions CI/CD pipeline for automated testing and releases.
 - [x] Verified Discord and Slack compatibility for webhook alerts.
 - [x] Implemented dynamic severity levels (WARNING/CRITICAL).
-- [x] **Added ignore pattern support and configuration file integrity verification.**
+- [x] Added ignore pattern support and configuration file integrity verification.
+- [x] Implemented Event Debouncing to prevent alert spam from atomic saves.
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 
