@@ -171,6 +171,16 @@ As I tested the agent with real-world editors like Vim and Nano, I noticed a maj
 
 **The Lesson:** Systems programming requires handling the "messiness" of the OS. What looks like one action to a human is often a dozen rapid-fire events to the kernel.
 
+## Milestone 21: Professional Polish - Semantic Alerting (September 20, 2025)
+
+As I reviewed the agent's output, I realized that while emojis looked "cool" initially, they were actually bloating the logs and the webhook messages. In a high-stakes security environment, clarity is more important than aesthetics.
+
+**The Breakthrough:** I rewrote the alert formatting to use **Semantic Labeling**. Now, instead of icons, alerts are prefixed with clear, text-based indicators like `[CRITICAL]` or `[WARNING]`. This makes the data easier to parse for both humans and automated scripts.
+
+**The Agent Field:** I also formally documented what the "Agent" field means. It's the unique identifier for the host reporting the event. This is crucial for "Distributed Defense"—if I deploy Lynx to 50 different servers, I need to know exactly which one is being attacked based on its name.
+
+**The Lesson:** Professional software should be "signal over noise." Stripping away the fluff makes the tool feel much more serious and reliable.
+
 ### Technical Achievements (Project Complete):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.

@@ -9,7 +9,6 @@ import (
 )
 
 // Alert represents the structured payload for a security notification.
-// We include 'content' for Discord and 'text' for Slack compatibility.
 type Alert struct {
 	Content   string `json:"content"`   // For Discord
 	Text      string `json:"text"`      // For Slack
@@ -21,13 +20,14 @@ type Alert struct {
 	Message   string `json:"message"`
 }
 
-// NewAlert creates a new Alert with the current timestamp and formats the content for webhooks.
+// NewAlert creates a new Alert and formats the content using semantic text labels.
 func NewAlert(agent, severity, event, file, message string) Alert {
 	timestamp := time.Now().Format(time.RFC3339)
 	
-	// Create a readable summary for Discord/Slack
-	summary := fmt.Sprintf("🚨 **Lynx FIM Alert** 🚨\n**Agent:** %s\n**Severity:** %s\n**Event:** %s\n**File:** %s\n**Details:** %s\n*Timestamp: %s*", 
-		agent, severity, event, file, message, timestamp)
+	// Use semantic text labels for severity instead of icons to keep output clean.
+	// Format: [SEVERITY] Event Type on Agent: Details
+	summary := fmt.Sprintf("[%s] %s detected on %s\nFile: %s\nDetails: %s\nTimestamp: %s", 
+		severity, event, agent, file, message, timestamp)
 
 	return Alert{
 		Content:   summary,
@@ -44,7 +44,7 @@ func NewAlert(agent, severity, event, file, message string) Alert {
 // SendWebhook performs an HTTP POST request to the specified URL with the alert payload.
 func SendWebhook(url string, a Alert) error {
 	if url == "" {
-		return nil // No webhook configured, skip alert delivery
+		return nil
 	}
 
 	payload, err := json.Marshal(a)

@@ -35,8 +35,10 @@ To be useful in production, a FIM must be quiet. I've implemented a robust "igno
 Detecting a breach is only half the battle; the other half is making sure the right people know about it instantly.
 
 -   **Structured JSON Logging:** Every security event is logged as a machine-readable JSON object. This is perfect for integration with SIEM platforms like Splunk, ELK, or Datadog.
--   **Asynchronous Webhooks:** Alerts are dispatched to Discord or Slack in the background using a non-blocking queue. This ensures that network latency never slows down the core monitoring loop.
--   **Multi-Platform Support:** Webhook payloads are pre-formatted for perfect rendering in both Discord and Slack, including emojis and bold summaries for high visibility.
+- **Asynchronous Webhooks:** Alerts are dispatched to Discord or Slack in the background using a non-blocking queue. This ensures that network latency never slows down the core monitoring loop.
+- **Agent Identification:** Every alert includes an `agent_name` (configured in `config.yaml`). This serves as a unique identifier for the host, allowing security teams to quickly pinpoint which server in a fleet is reporting the incident.
+- **Semantic Labeling:** Webhook payloads use professional, text-based semantic labels (e.g., `[CRITICAL]`, `[WARNING]`) instead of excessive icons. This ensures that the output is clean, readable, and focused on the data.
+
 
 ## 5. Flexible Operation Modes
 Lynx is designed to be both a persistent defender and a manual audit tool.
