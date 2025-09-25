@@ -46,14 +46,18 @@ and dispatched asynchronously to the configured webhook.`,
 		// Load and verify the baseline
 		baseline, err := fs.LoadBaseline(startBaselineInput, secret)
 		if err != nil {
-			logger.Error("Failed to load baseline. Integrity compromised or file missing.", "error", err.Error())
+			msg := fmt.Sprintf("CRITICAL: Baseline integrity compromised or file missing: %v", err)
+			logger.Error(msg)
+			sendTamperAlert(cfg, "BASELINE_TAMPER", startBaselineInput, msg)
 			os.Exit(1)
 		}
 
 		// Verify that the config file itself hasn't been tampered with
 		currentCfgHash, _ := crypto.HashFile(cfgFile)
 		if currentCfgHash != baseline.Metadata.ConfigHash {
-			logger.Error("Configuration mismatch! config.yaml has been modified since the baseline was created.", "file", cfgFile)
+			msg := "CRITICAL: Configuration file mismatch. The config.yaml has been modified since the baseline was created."
+			logger.Error(msg, "file", cfgFile)
+			sendTamperAlert(cfg, "CONFIG_TAMPER", cfgFile, msg)
 			fmt.Printf("Error: Configuration file mismatch. Please re-run 'lynx baseline' if this change was intentional.\n")
 			os.Exit(1)
 		}
@@ -83,15 +87,12 @@ and dispatched asynchronously to the configured webhook.`,
 		for {
 			select {
 			case inc := <-incidents:
-				// Log and print based on severity
 				if inc.Severity == "CRITICAL" {
 					logger.Error("Critical anomaly detected", "details", inc.Message, "file", inc.FilePath)
 				} else {
 					logger.Warn("Anomaly detected", "details", inc.Message, "file", inc.FilePath)
 				}
 				fmt.Printf("[%s] %s: %s\n", inc.Severity, inc.EventType, inc.FilePath)
-
-				// 3. Dispatch the alert asynchronously with full incident details
 				alertChan <- alert.NewAlert(cfg.AgentName, inc.Severity, inc.EventType, inc.FilePath, inc.Message)
 
 			case sig := <-sigChan:
@@ -101,6 +102,16 @@ and dispatched asynchronously to the configured webhook.`,
 			}
 		}
 	},
+}
+
+// sendTamperAlert attempts to send a single critical alert synchronously before exit.
+func sendTamperAlert(cfg *config.Config, eventType, file, message string) {
+	if cfg.WebhookURL == "" {
+		return
+	}
+	a := alert.NewAlert(cfg.AgentName, "CRITICAL", eventType, file, message)
+	// We send this synchronously because the agent is about to exit
+	_ = alert.SendWebhook(cfg.WebhookURL, a)
 }
 
 func init() {

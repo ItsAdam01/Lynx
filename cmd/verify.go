@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ItsAdam01/Lynx/internal/alert"
 	"github.com/ItsAdam01/Lynx/internal/app"
 	"github.com/ItsAdam01/Lynx/internal/config"
 	"github.com/ItsAdam01/Lynx/internal/crypto"
@@ -35,14 +36,18 @@ comparison of the entire file system against the stored hashes.`,
 		// Load and verify the baseline
 		baseline, err := fs.LoadBaseline(verifyBaselineInput, secret)
 		if err != nil {
-			fmt.Printf("Error: Failed to load/verify baseline: %v\n", err)
+			msg := fmt.Sprintf("CRITICAL: Baseline integrity compromised or file missing: %v", err)
+			fmt.Printf("Error: %s\n", msg)
+			sendTamperAlert(cfg, "BASELINE_TAMPER", verifyBaselineInput, msg)
 			os.Exit(1)
 		}
 
 		// Verify that the config file itself hasn't been tampered with
 		currentCfgHash, _ := crypto.HashFile(cfgFile)
 		if currentCfgHash != baseline.Metadata.ConfigHash {
-			fmt.Printf("Error: Configuration file mismatch. The config.yaml has been modified since this baseline was created.\n")
+			msg := "CRITICAL: Configuration file mismatch. The config.yaml has been modified since this baseline was created."
+			fmt.Printf("Error: %s\n", msg)
+			sendTamperAlert(cfg, "CONFIG_TAMPER", cfgFile, msg)
 			os.Exit(1)
 		}
 

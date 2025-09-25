@@ -181,6 +181,14 @@ As I reviewed the agent's output, I realized that while emojis looked "cool" ini
 
 **The Lesson:** Professional software should be "signal over noise." Stripping away the fluff makes the tool feel much more serious and reliable.
 
+## Milestone 22: Sounding the Alarm - Self-Protection Alerting (September 25, 2025)
+
+Today I realized a critical gap in my security tool: if an attacker tampered with the baseline or the configuration, the agent would log an error and exit, but it wouldn't *tell* anyone why. A silent failure is an attacker's best friend.
+
+**The Breakthrough:** I implemented **Self-Protection Alerting**. Now, when the agent detects a signature mismatch or a configuration change during startup, it doesn't just die—it sends a final, synchronous "emergency" alert via the webhook before shutting down. This ensures that the security team is immediately notified that the system's "Source of Truth" has been compromised.
+
+**The Lesson:** A security agent must be able to defend itself. By "sounding the alarm" even as it fails, Lynx FIM ensures total visibility into the system's integrity state.
+
 ### Technical Achievements (Project Complete):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
@@ -199,6 +207,7 @@ As I reviewed the agent's output, I realized that while emojis looked "cool" ini
 - [x] Implemented dynamic severity levels (WARNING/CRITICAL).
 - [x] Added ignore pattern support and configuration file integrity verification.
 - [x] Implemented Event Debouncing to prevent alert spam from atomic saves.
+- [x] **Implemented Self-Protection Alerting for baseline/config tampering.**
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 
