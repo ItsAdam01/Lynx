@@ -19,6 +19,8 @@ Comparing against baseline from: 2025-08-15 16:40:30
   - CRITICAL: File modified: /home/adamatienza/Lynx/test_audit/critical.txt
 ```
 
+![Actual Discord Alerts Captured](images/discord-alerts.png)
+
 ## Scenario: Real-time Monitoring and Alerting
 
 Next, I started the agent in the background and triggered another file modification. The agent immediately captured the event and logged it as a structured JSON object, ready for ingestion by a SIEM system.

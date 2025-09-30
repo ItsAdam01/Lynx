@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ItsAdam01/Lynx/internal/alert"
 	"github.com/ItsAdam01/Lynx/internal/app"
 	"github.com/ItsAdam01/Lynx/internal/config"
 	"github.com/ItsAdam01/Lynx/internal/crypto"

@@ -189,7 +189,17 @@ Today I realized a critical gap in my security tool: if an attacker tampered wit
 
 **The Lesson:** A security agent must be able to defend itself. By "sounding the alarm" even as it fails, Lynx FIM ensures total visibility into the system's integrity state.
 
-### Technical Achievements (Project Complete):
+## Milestone 23: Legal and Visual Closure (September 30, 2025)
+
+Today marks the final day of my three-month intensive build. I wanted to ensure the project was not only technically sound but also visually and legally complete.
+
+**The Visual Proof:** I've added actual screenshots of the Discord alerts to the documentation and README. Seeing the "Red" alerts in a real Discord channel is the ultimate proof that the alerting pipeline I built is robust and production-ready.
+
+**The Licensing:** I've implemented a custom **Restrictive Attribution & Ownership License**. As this project represents hundreds of hours of learning and building, I want to ensure my work is protected while still being available for others to learn from. The license mandates attribution and gives me full discretion over how the code is used or modified.
+
+**Signing Off:** This project has taken me from a Go novice to building a multi-threaded, cryptographic security agent. I'm ready for whatever comes next in my cybersecurity career.
+
+### Technical Achievements (Project Finalized):
 - [x] Verified SHA-256 hashing for files.
 - [x] Implemented constant-time HMAC comparison to prevent timing attacks.
 - [x] Established a strict test-driven development (TDD) workflow.
@@ -200,14 +210,9 @@ Today I realized a critical gap in my security tool: if an attacker tampered wit
 - [x] Recursive directory watching and anomaly detection logic.
 - [x] Structured JSON logging and Asynchronous Webhook alerting.
 - [x] Fully integrated, non-blocking alerting pipeline.
-- [x] Automated build system and cross-compilation with `Makefile`.
-- [x] Final codebase vetting and end-to-end proof-of-concept validation.
-- [x] GitHub Actions CI/CD pipeline for automated testing and releases.
-- [x] Verified Discord and Slack compatibility for webhook alerts.
-- [x] Implemented dynamic severity levels (WARNING/CRITICAL).
-- [x] Added ignore pattern support and configuration file integrity verification.
-- [x] Implemented Event Debouncing to prevent alert spam from atomic saves.
-- [x] **Implemented Self-Protection Alerting for baseline/config tampering.**
+- [x] Automated build system and cross-platform CI/CD.
+- [x] Verified Discord/Slack compatibility with visual proof.
+- [x] **Implemented custom ownership license and final visual assets.**
 
 > "A project is never truly finished, it's just ready for its next version. This journey has given me the foundation I need for a career in cybersecurity." - *Signing off on the Summer 2025 roadmap.*
 
