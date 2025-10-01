@@ -5,55 +5,54 @@ weight: 6
 
 # Proof of Concept: Lynx FIM in Action
 
-This page demonstrates the Lynx FIM agent's ability to detect and report unauthorized file system changes in real-time. I've captured the actual CLI and JSON log output from my final August 2025 audit.
+This page demonstrates the Lynx FIM agent's ability to detect and report unauthorized file system changes in real-time. Below is a correlation between the terminal commands and the resulting Discord alerts.
 
-## Scenario: Manual Integrity Audit
+## 🧪 Laboratory Test Scenario
 
-In this scenario, I established a baseline of a test directory and then manually tampered with a "critical system file." When I ran the `verify` command, the agent immediately flagged the discrepancy.
+In this audit, I used an isolated lab directory to verify the full lifecycle of the agent: initialization, baselining, and real-time detection.
 
-### Manual Audit CLI Output
+### 1. Establishing the Source of Truth
+First, I generated the signed cryptographic baseline for the test directory.
+
+**Terminal Input:**
+```bash
+./lynx baseline -o lab_baseline.json
+```
+
+**Terminal Output:**
 ```text
-Starting manual integrity audit for agent: default-agent
-Comparing against baseline from: 2025-08-15 16:40:30
-❌ 1 Anomaly(s) Detected:
-  - CRITICAL: File modified: /home/adamatienza/Lynx/test_audit/critical.txt
+Successfully created baseline: lab_baseline.json 
 ```
 
-![Actual Discord Alerts Captured](images/discord-alerts.png)
+### 2. Real-time Monitoring and Alerting
+Next, I started the monitoring agent and triggered several file system events (modifications, deletions, and additions).
 
-## Scenario: Real-time Monitoring and Alerting
-
-Next, I started the agent in the background and triggered another file modification. The agent immediately captured the event and logged it as a structured JSON object, ready for ingestion by a SIEM system.
-
-### Structured JSON Log Output (`lynx.log`)
-```json
-{
-  "time": "2025-08-15T16:40:30.716Z",
-  "level": "INFO",
-  "msg": "Starting Lynx FIM agent",
-  "agent_name": "default-agent",
-  "total_baseline_files": 27
-}
-{
-  "time": "2025-08-15T16:40:32.715Z",
-  "level": "WARN",
-  "msg": "Anomaly detected",
-  "details": "CRITICAL: File modified: /home/adamatienza/Lynx/test_audit/secret.txt"
-}
-{
-  "time": "2025-08-15T16:40:34.716Z",
-  "level": "INFO",
-  "msg": "Shutting down Lynx FIM",
-  "signal": "terminated"
-}
+**Terminal Input:**
+```bash
+./lynx start -b lab_baseline.json
 ```
+
+**Live Event Log:**
+```text
+[CRITICAL] FILE_MODIFIED: ./test-dir/test2
+[CRITICAL] FILE_DELETED: ./test-dir/test2.txt
+[WARNING] FILE_CREATED: ./test-dir/testrename.txt
+[WARNING] FILE_CREATED: ./test-dir/testadd
+```
+
+### 3. Visual Verification (Discord)
+The following image shows exactly how these events were dispatched and rendered in the Discord security channel. Note the semantic labeling and emojis used to distinguish between warnings and critical breaches.
+
+![Lynx FIM Discord Alerts Captured](../../static/images/discord-alerts.png)
 
 ## Observations and Lessons
 
-- **Precision:** The SHA-256 hashing correctly identifies even a single-character change to a file.
-- **Structure:** The JSON logs are perfect for further analysis. Each event includes a timestamp, a severity level, and specific details about the anomaly.
-- **Graceful Shutdown:** The agent handles signals like `Ctrl+C` cleanly, ensuring that all background processes (like the alert dispatcher) are properly closed.
+- **Precision:** The agent correctly distinguished between a file modification (CRITICAL) and a new file creation (WARNING).
+- **Responsiveness:** Alerts appeared in the Discord channel within milliseconds of the file being touched in the lab.
+- **Data Integrity:** The use of absolute paths in the final webhook payload ensures that the security analyst knows exactly where the event occurred on the host.
 
 ---
 
-> "Watching the logs turn red after I tampered with my own test files was a huge moment. It's the point where all the theory about SHA-256 and fsnotify became a real, working tool." - *Finalizing the Proof of Concept.*
+## 🗺️ Navigation
+- **[Performance Analysis](../development/performance.md)**: Efficiency and scalability research.
+- **[Back to Introduction](../../_index.md)**
