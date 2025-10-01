@@ -1,0 +1,34 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'site/**'
+      - '.github/workflows/docs.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true  # Fetch hugo-book theme
+          fetch-depth: 0    # Fetch all history for Hugo dates
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build
+        run: |
+          cd site
+          hugo --minify --baseURL "https://ItsAdam01.github.io/Lynx/"
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site/public

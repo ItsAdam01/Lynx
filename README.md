@@ -58,7 +58,7 @@ echo "tampered!" >> /tmp/lynx-lab/watched_dirs/top_secret.txt
 ```
 *You will see the critical alert immediately in Terminal 1.*
 
-![Lynx FIM Discord Alerts](./site/static/images/discord-alerts.png)
+![Screenshot of real-time Lynx FIM webhook notifications in a Discord channel](./site/static/images/discord-alerts.png)
 
 ---
 
