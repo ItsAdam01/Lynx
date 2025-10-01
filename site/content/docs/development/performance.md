@@ -21,7 +21,7 @@ I ran benchmarks using Go's standard `crypto/sha256` library to see how fast we 
 
 ## 2. Baseline Generation Speed
 
-I also benchmarked the coordination logic—scanning the file system, calculating hashes, and signing the output.
+I also benchmarked the coordination logic: scanning the file system, calculating hashes, and signing the output.
 
 ### Result:
 - **100 Files:** ~1.28 ms total.

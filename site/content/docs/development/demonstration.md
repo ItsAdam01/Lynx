@@ -43,7 +43,7 @@ Next, I started the monitoring agent and triggered several file system events (m
 ### 3. Visual Verification (Discord)
 The following image shows exactly how these events were dispatched and rendered in the Discord security channel. Note the semantic labeling and emojis used to distinguish between warnings and critical breaches.
 
-![Lynx FIM Discord Alerts Captured](../../static/images/discord-alerts.png)
+![Lynx FIM Discord Alerts Captured](/images/discord-alerts.png)
 
 ## Observations and Lessons
 
