@@ -2,7 +2,7 @@
 
 Lynx FIM is a host-based intrusion detection agent (HIDS) I built to understand the fundamentals of file integrity monitoring and real-time system alerting in Go. 
 
-This repository contains the full source code and a detailed documentation site covering my learning journey from June to August 2025.
+This repository contains the full source code and a detailed documentation site.
 
 ---
 
@@ -59,8 +59,3 @@ echo "tampered!" >> /tmp/lynx-lab/watched_dirs/top_secret.txt
 *You will see the critical alert immediately in Terminal 1.*
 
 ![Screenshot of real-time Lynx FIM webhook notifications in a Discord channel](./site/static/images/discord-alerts.png)
-
----
-
-- **Timeline:** June 2025 – September 2025
-- **Goal:** Learn by building a professional-grade security tool from scratch.
